@@ -1,0 +1,21 @@
+# Sentinel gating itself: scan every pull request opened against this repo.
+# ALLOW -> passes, ESCALATE -> fails (needs a human), BLOCK -> fails (stop).
+name: Sentinel gate
+
+on:
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Sentinel scans this PR
+        run: >
+          python scan_pr.py
+          ${{ github.repository_owner }}
+          ${{ github.event.repository.name }}
+          ${{ github.event.number }}

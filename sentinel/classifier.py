@@ -1,5 +1,8 @@
-"""Optional LLM risk classifier. Falls back to None if no API key is set,
-so the whole thing still runs offline on rules alone."""
+"""Optional LLM risk classifier (Google Gemini, modern google-genai SDK).
+
+Disabled unless SENTINEL_LLM=1, so the gate stays fast/deterministic/offline by
+default. Any failure returns None and the gate falls back to rules alone.
+"""
 import os
 import re
 
@@ -12,20 +15,21 @@ DIFF:
 {diff}
 """
 
+MODEL = os.environ.get("SENTINEL_LLM_MODEL", "gemini-2.0-flash")
+
 
 def score_llm(diff):
-    # Opt-in only: set SENTINEL_LLM=1 to enable the live classifier.
-    # Keeps the demo fast, deterministic, and offline by default.
     if os.environ.get("SENTINEL_LLM") != "1":
         return None
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         return None
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        out = model.generate_content(PROMPT.format(diff=diff[:6000])).text
+        from google import genai
+        client = genai.Client(api_key=key)
+        resp = client.models.generate_content(
+            model=MODEL, contents=PROMPT.format(diff=diff[:6000]))
+        out = resp.text or ""
         m = re.search(r"RISK\s*=\s*([0-3])", out)
         r = re.search(r"REASON\s*=\s*(.+)", out)
         if m:

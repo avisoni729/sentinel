@@ -12,6 +12,7 @@ from sentinel import store
 from sentinel.github_fetch import fetch_pr_diff, latest_pr
 
 ICON = {"ALLOW": "PASS", "ESCALATE": "HOLD", "BLOCK": "BLOCK"}
+EXIT = {"ALLOW": 0, "ESCALATE": 1, "BLOCK": 2}   # non-zero fails CI
 
 
 def main():
@@ -36,7 +37,8 @@ def main():
     for r in d.reasons:
         print("   -", r)
     print()
+    return EXIT[d.verdict]
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)

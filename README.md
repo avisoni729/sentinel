@@ -103,12 +103,24 @@ check replaced with `if True`, a password hashed with MD5) and one deliberately
 conservative size flag. Those residuals are exactly what the optional LLM
 classifier on the roadmap is for.
 
+## Continuous integration
+
+Two GitHub Actions workflows ship with the repo:
+
+- **`ci.yml`** — runs the tests and the evaluation on every push / PR.
+- **`sentinel.yml`** — Sentinel gates *itself*: it scans each incoming PR and
+  fails the check on `ESCALATE` (needs a human) or `BLOCK` (stop), via exit codes.
+
+Enable the LLM classifier by setting `SENTINEL_LLM=1` and a `GEMINI_API_KEY`
+(uses the `google-genai` SDK; rules-only is the default).
+
 ## What's next (roadmap)
 
 - [x] Evaluation harness — measure the risk scorer (precision / recall)
-- [x] Scan real GitHub pull requests
-- [ ] LLM classifier wired in to close the semantic blind spots
-- [ ] GitHub App / webhook (run automatically on every PR)
+- [x] Scan real GitHub pull requests (CLI + CI workflow)
+- [x] CI: tests + eval on every push, Sentinel gating its own PRs
+- [ ] LLM classifier verified end-to-end (code ready; needs key + connectivity)
+- [ ] GitHub App with inline PR comments (richer than the CI check)
 - [ ] Connectors beyond code: email, database, deploy actions
 - [ ] Policy as config (per-team rules)
 

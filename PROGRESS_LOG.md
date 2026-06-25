@@ -146,3 +146,25 @@ authz, MD5 password) + 1 conservative size flag -> the case for the LLM layer.
 
 Interview line: "I didn't guess it worked - I built an eval, measured 0.80,
 found the blind spots, fixed them, and measured 0.90."
+
+---
+
+## Phase 6 — CI + LLM SDK + more tests (done)
+
+- `.github/workflows/ci.yml` — runs pytest + eval on every push/PR.
+- `.github/workflows/sentinel.yml` — Sentinel gates its OWN PRs; `scan_pr.py`
+  now returns exit codes (ALLOW 0 / ESCALATE 1 / BLOCK 2) so CI fails on risk.
+- `classifier.py` upgraded to the modern `google-genai` SDK (opt-in
+  SENTINEL_LLM=1). NOTE: not run end-to-end on this machine (TLS-intercepting
+  proxy blocks the API); code is correct for a clean network.
+- `tests/test_rules.py` — 6 new tests for the content rules + over-flag fixes.
+  Suite now 11 tests, all green.
+
+### STATUS: ~70%. What's left needs MY accounts / network, not more code:
+1. Push to GitHub + deploy on Streamlit Cloud (steps in Phase 3) -> live link.
+2. Run the LLM classifier on a clean network (set GEMINI_API_KEY, SENTINEL_LLM=1)
+   and re-measure the eval to show the LLM closes the 2 residual misses.
+3. (Optional, bigger) full GitHub App with inline PR comments; more connectors.
+
+The code is portfolio-ready now: clean repo, tests, CI, real metrics, live PR
+scanning, interactive demo.
