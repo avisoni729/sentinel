@@ -5,6 +5,12 @@ then:  python agent_demo.py
 """
 import os
 import pathlib
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")   # Windows console emoji-safe
+except Exception:
+    pass
 
 # Load a local .env (so the key never has to be typed into a terminal/chat).
 _env = pathlib.Path(__file__).with_name(".env")
@@ -13,7 +19,7 @@ if _env.exists():
         _line = _line.strip()
         if _line and not _line.startswith("#") and "=" in _line:
             _k, _v = _line.split("=", 1)
-            os.environ.setdefault(_k.strip(), _v.strip())
+            os.environ[_k.strip()] = _v.strip().strip('"').strip("'")  # .env wins
 
 from sentinel.models import Action
 from sentinel.agent import investigate

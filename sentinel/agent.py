@@ -38,11 +38,11 @@ def _build_agent(model, repo, diff):
 
 
 def _default_model():
+    # Uses the google-genai SDK over HTTPS (httpx), which truststore secures even
+    # behind an intercepting proxy. 2.5-flash has free-tier quota; 2.0-flash did not.
     from langchain_google_genai import ChatGoogleGenerativeAI
-    # transport="rest" so it goes over HTTPS (which truststore fixes) rather than
-    # gRPC, whose stricter BoringSSL rejects the malformed intercepting CA.
-    return ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0,
-                                  transport="rest")
+    model = os.environ.get("SENTINEL_LLM_MODEL", "gemini-2.5-flash")
+    return ChatGoogleGenerativeAI(model=model, temperature=0)
 
 
 def investigate(action, repo, model=None):
@@ -56,8 +56,23 @@ def investigate(action, repo, model=None):
     agent = _build_agent(model, repo, action.diff)
     result = agent.invoke({"messages": [("system", SYSTEM), ("user", action.diff)]})
     messages = result["messages"]
-    decision = parse_decision(action, messages[-1].content)
+    decision = parse_decision(action, _text(messages[-1].content))
     return decision, build_trace(messages)
+
+
+def _text(content):
+    """Gemini may return content as a string or a list of blocks; flatten it."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        out = []
+        for c in content:
+            if isinstance(c, str):
+                out.append(c)
+            elif isinstance(c, dict):
+                out.append(c.get("text") or c.get("content") or "")
+        return "\n".join(out)
+    return str(content)
 
 
 def parse_decision(action, text):
@@ -81,8 +96,8 @@ def build_trace(messages):
             for c in calls:
                 steps.append(f"🔧 used {c['name']}({c.get('args', {})})")
         elif type(m).__name__ == "ToolMessage":
-            out = (m.content or "").strip().replace("\n", " ")
+            out = _text(m.content).strip().replace("\n", " ")
             steps.append(f"👁️  saw: {out[:120]}")
-        elif type(m).__name__ == "AIMessage" and (m.content or "").strip():
-            steps.append(f"💭 {m.content.strip()[:160]}")
+        elif type(m).__name__ == "AIMessage" and _text(m.content).strip():
+            steps.append(f"💭 {_text(m.content).strip()[:160]}")
     return steps
