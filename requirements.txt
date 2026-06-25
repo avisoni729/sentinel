@@ -1,0 +1,6 @@
+# Core app + hosted demo
+streamlit>=1.36
+
+# Optional: enables the live LLM risk classifier (set SENTINEL_LLM=1).
+# Not required to run — the gate works on rules alone.
+#   google-genai>=1.0
