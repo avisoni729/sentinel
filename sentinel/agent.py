@@ -39,7 +39,10 @@ def _build_agent(model, repo, diff):
 
 def _default_model():
     from langchain_google_genai import ChatGoogleGenerativeAI
-    return ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0)
+    # transport="rest" so it goes over HTTPS (which truststore fixes) rather than
+    # gRPC, whose stricter BoringSSL rejects the malformed intercepting CA.
+    return ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0,
+                                  transport="rest")
 
 
 def investigate(action, repo, model=None):

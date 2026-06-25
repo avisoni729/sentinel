@@ -1,10 +1,20 @@
 """Demo: the agentic risk investigator on a change the plain rules MISS.
 
-Run on a clean network (no TLS interception) with the LLM enabled:
-    set SENTINEL_LLM=1
-    set GEMINI_API_KEY=<your key>
-    python agent_demo.py
+Put your key in a local .env file (SENTINEL_LLM=1 and GEMINI_API_KEY=...),
+then:  python agent_demo.py
 """
+import os
+import pathlib
+
+# Load a local .env (so the key never has to be typed into a terminal/chat).
+_env = pathlib.Path(__file__).with_name(".env")
+if _env.exists():
+    for _line in _env.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _k, _v = _line.split("=", 1)
+            os.environ.setdefault(_k.strip(), _v.strip())
+
 from sentinel.models import Action
 from sentinel.agent import investigate
 

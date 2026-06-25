@@ -1,5 +1,6 @@
 # Core app + hosted demo
 streamlit>=1.36
+truststore>=0.9   # use the OS cert store (works behind intercepting proxies)
 
 # Optional: enables the live LLM risk classifier (set SENTINEL_LLM=1).
 # Not required to run — the gate works on rules alone.
