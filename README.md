@@ -63,10 +63,47 @@ streamlit run dashboard.py   # the visual, clickable dashboard
 python -m pytest -q          # tests
 ```
 
+## Scan a real GitHub pull request
+
+```bash
+python scan_pr.py pallets flask          # scores the latest PR
+python scan_pr.py <owner> <repo> <num>   # a specific PR
+```
+
+Public repos need no auth. Example output:
+
+```
+[PASS] pallets/flask#6066  (risk 1/3)
+   - Medium-size change (42 added lines)
+```
+
+## Evaluation (does the scorer actually work?)
+
+Measured against a labeled set of 20 changes (`eval/dataset.json`):
+
+| metric | score |
+|---|---|
+| Precision | 0.83 |
+| Recall | 0.77 |
+| F1 | 0.80 |
+| Accuracy | 0.75 |
+
+```bash
+python eval/run_eval.py
+```
+
+**Honest findings.** The rules catch explicit risk well (secrets, sensitive
+paths, deletions) but have known blind spots — they miss *semantic* risk
+(`eval()`, `shell=True`, privilege escalation) and over-flag on filenames
+(a `tests/test_payment.py`). That gap is exactly what the LLM classifier and
+policy tuning on the roadmap are for. Measuring it is the point.
+
 ## What's next (roadmap)
 
-- [ ] Connect to real GitHub pull requests (GitHub App / webhook)
-- [ ] Evaluation harness — measure the risk classifier (precision / recall)
+- [x] Evaluation harness — measure the risk scorer (precision / recall)
+- [x] Scan real GitHub pull requests
+- [ ] LLM classifier wired in to close the semantic blind spots
+- [ ] GitHub App / webhook (run automatically on every PR)
 - [ ] Connectors beyond code: email, database, deploy actions
 - [ ] Policy as config (per-team rules)
 
@@ -80,9 +117,12 @@ sentinel/
   gate.py        combine signals -> decision
   store.py       SQLite: decisions + status + scorecard
   seed.py        load sample data
+  github_fetch.py fetch a real PR diff from GitHub
 demo.py          run the gate over samples (CLI)
 review.py        human approval queue (CLI)
+scan_pr.py       scan a real GitHub pull request (CLI)
 dashboard.py     Streamlit dashboard (the live demo)
+eval/            labeled dataset + precision/recall harness
 tests/           behaviour tests
 ```
 

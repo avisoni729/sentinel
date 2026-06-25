@@ -79,3 +79,52 @@ human, auth bypass rejected by a human — all remembered in the DB.
     python review.py approve <id>
     python review.py reject  <id>
     streamlit run dashboard.py           # visual dashboard (needs: pip install streamlit)
+
+---
+
+## Phase 3 — Public repo + live demo (done locally, handoff to me)
+
+Built for a recruiter-testable demo:
+- `dashboard.py` is now **interactive** — a visitor pastes/edits a diff, clicks
+  "Run Sentinel", sees PASS/HOLD/BLOCK live. Self-seeds so first visit shows data.
+- Added `README.md` (public, recruiter-facing), `LICENSE` (MIT, my name),
+  `tests/test_gate.py` (5 passing tests), `.gitignore`, deploy-ready
+  `requirements.txt`.
+- `git init` + first commit done locally. DB is gitignored.
+
+### MY TO-DO — put it online (needs my accounts)
+1. **GitHub:** create an empty repo named `sentinel` at github.com/new (no README).
+2. In `D:\claude\sentinel` run:
+       git branch -M main
+       git remote add origin https://github.com/<MY-USERNAME>/sentinel.git
+       git push -u origin main
+3. **Live demo:** go to share.streamlit.io -> "New app" -> pick the `sentinel`
+   repo -> main file `dashboard.py` -> Deploy. Copy the public URL.
+4. Paste that URL into README.md (the "Live demo" line) and into my resume.
+5. Optional: record a 2-min screen capture of the dashboard for applications.
+
+---
+
+## Phase 4 — Eval harness + real GitHub scan (done)
+
+- `eval/build_dataset.py` -> `eval/dataset.json`: 20 labeled changes with the
+  ground-truth "should a human be involved?" flag, including deliberate blind
+  spots so the eval is honest.
+- `eval/run_eval.py`: measures the gate. Result: **Precision 0.83, Recall 0.77,
+  F1 0.80, Accuracy 0.75**, and prints exactly which cases it got wrong.
+  - Misses semantic risk (eval/shell/privilege escalation) -> motivates the LLM.
+  - Over-flags on filenames (test_payment.py, security.md) -> motivates tuning.
+  - This honest gap is the interview story; it's WHY phase 5 (LLM) exists.
+- `sentinel/github_fetch.py` + `scan_pr.py`: fetch and score a REAL public
+  GitHub PR. Verified live on `pallets/flask#6066` (PASS, risk 1).
+  - Note: this machine has a TLS-intercepting proxy; used SENTINEL_INSECURE=1
+    for local testing only. Works normally on a clean machine / Streamlit Cloud.
+- README updated with the eval table, GitHub usage, refreshed roadmap.
+
+### Where the project stands now (~60-65%)
+Working: gate, audit, appraise, human approval, persistence, interactive
+dashboard, eval harness with real metrics, live GitHub PR scanning, tests, docs.
+
+Remaining for "final": wire the LLM classifier to fix the blind spots (and
+re-measure to show the metrics improve), then GitHub App/webhook for auto-runs,
+then connectors beyond code. Then deploy + demo video.
