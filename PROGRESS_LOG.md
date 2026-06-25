@@ -128,3 +128,21 @@ dashboard, eval harness with real metrics, live GitHub PR scanning, tests, docs.
 Remaining for "final": wire the LLM classifier to fix the blind spots (and
 re-measure to show the metrics improve), then GitHub App/webhook for auto-runs,
 then connectors beyond code. Then deploy + demo video.
+
+---
+
+## Phase 5 — Eval-driven improvement (done)
+
+Used the eval to actually improve the product, then re-measured (the real story):
+- Added a content-rule layer (`DANGEROUS` patterns: eval/exec, shell=True,
+  os.system, pickle load, verify=False, privilege escalation, rm -rf).
+- Refined path rules so docs (*.md, docs/) and test files don't over-flag on
+  keywords (a security *doc* isn't a security change).
+- Expanded the eval to 25 cases incl. held-out precision checks + residual misses.
+
+Result: **P 0.83 -> 0.93, R 0.77 -> 0.87, F1 0.80 -> 0.90** (larger set). Tests
+green. Remaining 3 errors are honest: 2 signature-less semantic risks (broken
+authz, MD5 password) + 1 conservative size flag -> the case for the LLM layer.
+
+Interview line: "I didn't guess it worked - I built an eval, measured 0.80,
+found the blind spots, fixed them, and measured 0.90."

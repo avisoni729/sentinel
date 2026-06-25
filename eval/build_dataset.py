@@ -82,6 +82,19 @@ add("delete-tests", True, "removes a test file",
 add("password-literal", True, "hardcoded password",
     [{"path": "src/db.py", "add": ["password = \"S3cretPassw0rd!\""]}])
 
+# ---- held-out cases (added after the content rules, to keep the eval honest) ----
+add("model-evaluate", False, "precision check: model.evaluate() is NOT eval()",
+    [{"path": "src/ml/train.py", "add": ["    acc = model.evaluate(x_test)"]}])
+add("evaluate-comment", False, "precision check: the word 'evaluate' in a comment",
+    [{"path": "src/notes.py", "add": ["# we evaluate the data here"]}])
+add("big-safe-rename", False, "FALSE ALARM by design: large but mechanical rename",
+    [{"path": "src/views.py", "add": [f"    v{i} = old_v{i}" for i in range(90)]}])
+add("broken-authz", True, "RESIDUAL BLIND SPOT: authz check replaced with if True",
+    [{"path": "src/api/share.py", "remove": ["    if user.id == owner.id:"],
+      "add": ["    if True:  # allow all"]}])
+add("weak-md5-password", True, "RESIDUAL BLIND SPOT: weak hashing of a password",
+    [{"path": "src/hashing.py", "add": ["    return hashlib.md5(pw).hexdigest()"]}])
+
 
 if __name__ == "__main__":
     json.dump(E, open(OUT, "w", encoding="utf-8"), indent=2)

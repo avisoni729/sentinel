@@ -55,9 +55,10 @@ def main():
         print("    (none)")
     for kind, e, d in misses:
         print(f"    [{kind}] {e['id']:<22} got {d.verdict:<9} - {e['note']}")
-    print("\n  Takeaway: rules catch explicit risk (secrets, sensitive paths,")
-    print("  deletions) but miss *semantic* risk (eval/shell/privilege) and")
-    print("  over-flag on filenames - which is exactly what the LLM classifier")
+    print("\n  Takeaway: secrets, sensitive paths, deletions and known-dangerous")
+    print("  constructs (eval/shell/privilege) are caught. The residual misses are")
+    print("  *semantic* risks with no signature (broken authz, weak crypto) plus a")
+    print("  deliberately conservative size flag - which is what the LLM classifier")
     print("  and policy tuning on the roadmap are for.\n")
 
 

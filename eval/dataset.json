@@ -118,5 +118,35 @@
     "expected_flag": true,
     "note": "hardcoded password",
     "diff": "diff --git a/src/db.py b/src/db.py\n--- a/src/db.py\n+++ b/src/db.py\n+password = \"S3cretPassw0rd!\"\n"
+  },
+  {
+    "id": "model-evaluate",
+    "expected_flag": false,
+    "note": "precision check: model.evaluate() is NOT eval()",
+    "diff": "diff --git a/src/ml/train.py b/src/ml/train.py\n--- a/src/ml/train.py\n+++ b/src/ml/train.py\n+    acc = model.evaluate(x_test)\n"
+  },
+  {
+    "id": "evaluate-comment",
+    "expected_flag": false,
+    "note": "precision check: the word 'evaluate' in a comment",
+    "diff": "diff --git a/src/notes.py b/src/notes.py\n--- a/src/notes.py\n+++ b/src/notes.py\n+# we evaluate the data here\n"
+  },
+  {
+    "id": "big-safe-rename",
+    "expected_flag": false,
+    "note": "FALSE ALARM by design: large but mechanical rename",
+    "diff": "diff --git a/src/views.py b/src/views.py\n--- a/src/views.py\n+++ b/src/views.py\n+    v0 = old_v0\n+    v1 = old_v1\n+    v2 = old_v2\n+    v3 = old_v3\n+    v4 = old_v4\n+    v5 = old_v5\n+    v6 = old_v6\n+    v7 = old_v7\n+    v8 = old_v8\n+    v9 = old_v9\n+    v10 = old_v10\n+    v11 = old_v11\n+    v12 = old_v12\n+    v13 = old_v13\n+    v14 = old_v14\n+    v15 = old_v15\n+    v16 = old_v16\n+    v17 = old_v17\n+    v18 = old_v18\n+    v19 = old_v19\n+    v20 = old_v20\n+    v21 = old_v21\n+    v22 = old_v22\n+    v23 = old_v23\n+    v24 = old_v24\n+    v25 = old_v25\n+    v26 = old_v26\n+    v27 = old_v27\n+    v28 = old_v28\n+    v29 = old_v29\n+    v30 = old_v30\n+    v31 = old_v31\n+    v32 = old_v32\n+    v33 = old_v33\n+    v34 = old_v34\n+    v35 = old_v35\n+    v36 = old_v36\n+    v37 = old_v37\n+    v38 = old_v38\n+    v39 = old_v39\n+    v40 = old_v40\n+    v41 = old_v41\n+    v42 = old_v42\n+    v43 = old_v43\n+    v44 = old_v44\n+    v45 = old_v45\n+    v46 = old_v46\n+    v47 = old_v47\n+    v48 = old_v48\n+    v49 = old_v49\n+    v50 = old_v50\n+    v51 = old_v51\n+    v52 = old_v52\n+    v53 = old_v53\n+    v54 = old_v54\n+    v55 = old_v55\n+    v56 = old_v56\n+    v57 = old_v57\n+    v58 = old_v58\n+    v59 = old_v59\n+    v60 = old_v60\n+    v61 = old_v61\n+    v62 = old_v62\n+    v63 = old_v63\n+    v64 = old_v64\n+    v65 = old_v65\n+    v66 = old_v66\n+    v67 = old_v67\n+    v68 = old_v68\n+    v69 = old_v69\n+    v70 = old_v70\n+    v71 = old_v71\n+    v72 = old_v72\n+    v73 = old_v73\n+    v74 = old_v74\n+    v75 = old_v75\n+    v76 = old_v76\n+    v77 = old_v77\n+    v78 = old_v78\n+    v79 = old_v79\n+    v80 = old_v80\n+    v81 = old_v81\n+    v82 = old_v82\n+    v83 = old_v83\n+    v84 = old_v84\n+    v85 = old_v85\n+    v86 = old_v86\n+    v87 = old_v87\n+    v88 = old_v88\n+    v89 = old_v89\n"
+  },
+  {
+    "id": "broken-authz",
+    "expected_flag": true,
+    "note": "RESIDUAL BLIND SPOT: authz check replaced with if True",
+    "diff": "diff --git a/src/api/share.py b/src/api/share.py\n--- a/src/api/share.py\n+++ b/src/api/share.py\n-    if user.id == owner.id:\n+    if True:  # allow all\n"
+  },
+  {
+    "id": "weak-md5-password",
+    "expected_flag": true,
+    "note": "RESIDUAL BLIND SPOT: weak hashing of a password",
+    "diff": "diff --git a/src/hashing.py b/src/hashing.py\n--- a/src/hashing.py\n+++ b/src/hashing.py\n+    return hashlib.md5(pw).hexdigest()\n"
   }
 ]
