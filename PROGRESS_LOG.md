@@ -184,6 +184,20 @@ scanning, interactive demo.
 Live webhook NOT exercised here (needs a registered App + clean network). Code is
 correct and ready; registration/hosting is an account task.
 
+---
+
+## Phase 8 — SHIPPED (Jun 2026)
+
+- gh CLI installed + authenticated (user **avisoni729**); TLS proxy doesn't block
+  gh (uses the Windows cert store).
+- Public repo pushed: https://github.com/avisoni729/sentinel — CI green.
+- Deployed to Streamlit Cloud:
+  https://sentinel-e8aejqk3bdnmvgz36efcyh.streamlit.app
+- README links both. Resume-ready.
+
+Still optional / later: verify the LLM classifier on a clean network and
+re-measure; register + host the GitHub App (docs/GITHUB_APP.md); more connectors.
+
 ### Reminder on access (asked Jun 2026)
 - I am NOT using Avi's GitHub/Streamlit accounts — no access at all.
 - To delegate GitHub: install `gh`, run `gh auth login` in his terminal (creds go
