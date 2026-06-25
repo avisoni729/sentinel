@@ -1,14 +1,17 @@
-"""Sentinel dashboard — the live, clickable demo.
+"""Sentinel dashboard — the live, clickable demo (built to be clear to non-coders).
 
 Local:   streamlit run dashboard.py
-Hosted:  deploy this repo on Streamlit Community Cloud (entry file: dashboard.py)
+Hosted:  Streamlit Community Cloud, entry file dashboard.py
 """
 import json
+import time
 
 import streamlit as st
 
 from sentinel.models import Action
 from sentinel.gate import evaluate
+from sentinel.analyze import find_findings
+from sentinel.intake import as_diff
 from sentinel import store, seed
 
 store.init()
@@ -16,64 +19,91 @@ seed.seed_if_empty()
 
 st.set_page_config(page_title="Sentinel", page_icon="🛡️", layout="wide")
 
-VERDICT_COLOR = {"ALLOW": "green", "ESCALATE": "orange", "BLOCK": "red"}
-VERDICT_WORD = {"ALLOW": "PASS — auto-approved",
-                "ESCALATE": "HOLD — needs a human",
-                "BLOCK": "BLOCK — stopped"}
+# Plain-English verdict, for non-coders
+RESULT = {
+    "ALLOW":    ("green",  "✅ PASS",  "Looks safe — no human needed."),
+    "ESCALATE": ("orange", "🟠 HOLD",  "Risky — a person should review this before it goes live."),
+    "BLOCK":    ("red",    "🛑 BLOCK", "Stopped — this should not be allowed through as-is."),
+}
+
+# Four copy-paste examples (3 risky + 1 safe). The user never sees diff syntax.
+EXAMPLES = [
+    ("A bank function with a password written right in the code",
+     'def connect():\n    API_KEY = "sk-abcd1234efgh5678ijklmnop"\n    return Database(API_KEY)'),
+    ("A function that runs whatever text a user sends it",
+     'def handle(request):\n    return eval(request.data)'),
+    ("A function that runs a system command built from user input",
+     'import subprocess\ndef run(user_cmd):\n    subprocess.run(user_cmd, shell=True)'),
+    ("A simple, harmless function that adds two numbers",
+     'def add(a, b):\n    return a + b'),
+]
 
 st.title("🛡️ Sentinel")
 st.markdown(
-    "**A control plane for AI-generated actions.** Before a risky change from an "
-    "AI tool (Copilot, Cursor, Claude Code…) is let through, Sentinel "
-    "**risk-scores it, decides pass / hold / block, logs it, and scores each "
-    "agent's reliability over time.** It doesn't judge code *quality* — it judges "
-    "*risk and trust*. [How it works ↓](#how-it-works)"
+    "**AI tools now write a lot of code on their own — and some of it is risky** "
+    "(a leaked password, a dangerous command). Sentinel is an automatic safety "
+    "check that reads each AI-made change and decides **Pass**, **Hold** (ask a "
+    "human), or **Block** — *before* it can cause harm. Try it below 👇"
 )
 
-tab_try, tab_board, tab_about = st.tabs(["▶ Try it", "📊 Live board", "ℹ️ How it works"])
+tab_try, tab_board, tab_about = st.tabs(["▶ Try it", "📊 Live board", "ℹ️ What is this?"])
 
 # ---------------------------------------------------------------- Try it
 with tab_try:
-    st.subheader("Paste an AI-generated change and let Sentinel judge it")
-    samples = {s["id"]: s for s in seed.load_samples()}
-    pick = st.selectbox("Start from a sample (or edit it):", list(samples.keys()))
-    chosen = samples[pick]
+    st.subheader("Try it — no coding needed")
+    st.markdown(
+        "1. Pick an example below and click the **copy icon** (top-right of the box).\n"
+        "2. **Paste** it into the box at the bottom.\n"
+        "3. Press **Check this code** and see the result.\n\n"
+        "*Or paste any code of your own.*"
+    )
 
-    col_l, col_r = st.columns(2)
-    with col_l:
-        agent = st.text_input("AI tool / agent name", chosen["agent"])
-        action_id = st.text_input("Change id", "TRY-" + pick)
-    diff = st.text_area("Diff", chosen["diff"], height=240)
+    for label, code in EXAMPLES:
+        st.markdown(f"**{label}**")
+        st.code(code, language="python")
 
-    if st.button("Run Sentinel", type="primary"):
-        d = evaluate(Action(action_id, agent, "code_pr", diff))
-        store.save_decision(d)
-        st.markdown(f"### :{VERDICT_COLOR[d.verdict]}[{VERDICT_WORD[d.verdict]}]  "
-                    f"·  risk {d.risk}/3")
-        for r in d.reasons:
-            st.write("•", r)
-        st.caption("Saved to the audit log — see the Live board tab.")
+    st.divider()
+    pasted = st.text_area("Paste code here", height=170, placeholder="Paste one of the examples above…")
+    if st.button("Check this code", type="primary"):
+        if not pasted.strip():
+            st.warning("Paste some code first.")
+        else:
+            action = Action(f"TRY-{int(time.time())}", "you", "code_pr", as_diff(pasted))
+            d = evaluate(action, snippet=True)
+            store.save_decision(d)
+            color, head, meaning = RESULT[d.verdict]
+            st.markdown(f"## :{color}[{head}]")
+            st.markdown(f"**{meaning}**")
+            st.markdown("**Why:**")
+            for r in d.reasons:
+                st.write("•", r)
+            findings = find_findings(as_diff(pasted))
+            if findings:
+                st.caption("Flagged lines:")
+                for f in findings:
+                    st.write(f"  line {f.line}: {f.message}")
 
 # ---------------------------------------------------------------- Board
 with tab_board:
+    st.caption("Every check is recorded here, and each AI tool gets a trust score over time.")
     rows = store.list_all()
     total = len(rows)
     auto = sum(1 for r in rows if r["status"] == "auto-approved")
     pending = sum(1 for r in rows if r["status"] == "pending")
     blocked = sum(1 for r in rows if r["status"] == "blocked")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Total actions", total)
-    c2.metric("Auto-approved", auto)
+    c1.metric("Total checks", total)
+    c2.metric("Passed", auto)
     c3.metric("Waiting on human", pending)
     c4.metric("Blocked", blocked)
 
-    st.subheader("Pending human approval")
+    st.subheader("Waiting for a human")
     pend = store.list_pending()
     if not pend:
         st.success("Nothing waiting.")
     for d in pend:
         with st.container(border=True):
-            st.markdown(f"**{d['action_id']}** · by `{d['agent']}` · risk {d['risk']}")
+            st.markdown(f"**{d['action_id']}** · from `{d['agent']}` · risk {d['risk']}/3")
             st.write(", ".join(json.loads(d["reasons"])) if d["reasons"] else "")
             a, b, _ = st.columns([1, 1, 6])
             if a.button("✅ Approve", key="a" + d["action_id"]):
@@ -81,17 +111,17 @@ with tab_board:
             if b.button("❌ Reject", key="r" + d["action_id"]):
                 store.set_status(d["action_id"], "rejected"); st.rerun()
 
-    st.subheader("Agent scorecard (appraisal)")
+    st.subheader("Trust scorecard (per AI tool)")
     st.table([
-        {"agent": a, "total": t, "auto-approved": au, "flagged": f,
+        {"AI tool": a, "checks": t, "passed": au, "flagged": f,
          "blocked": bl, "flag %": f"{r*100:.0f}%"}
         for a, t, au, f, bl, r in store.scorecard()
     ])
 
-    st.subheader("Audit log")
+    st.subheader("Full log")
     st.dataframe(
-        [{"time": r["ts"], "action": r["action_id"], "agent": r["agent"],
-          "verdict": r["verdict"], "status": r["status"]} for r in rows],
+        [{"time": r["ts"], "change": r["action_id"], "from": r["agent"],
+          "result": r["verdict"], "status": r["status"]} for r in rows],
         use_container_width=True,
     )
     if st.button("↺ Reset demo data"):
@@ -100,22 +130,21 @@ with tab_board:
 # ---------------------------------------------------------------- About
 with tab_about:
     st.markdown("""
-#### How it works
-1. **Intercept** — an AI tool's change (a pull request) reaches the gate.
-2. **Score risk** — deterministic rules (secrets, sensitive files, deletions,
-   missing tests, blast radius) plus an optional LLM classifier.
-3. **Decide** — `ALLOW` (auto-approve) · `ESCALATE` (hold for a human) ·
-   `BLOCK` (stop, e.g. a leaked secret).
-4. **Audit** — every decision is logged and attributed to the agent that made it.
-5. **Appraise** — decisions roll up into a per-agent trust scorecard over time.
+#### The problem, in one line
+AI now writes code faster than people can safely check it. The bottleneck is no
+longer *writing* — it's *trust*.
+
+#### What Sentinel does
+It sits between the AI and your systems and, for every AI-made change:
+1. **Reads** it and scores how risky it is.
+2. **Decides** — Pass (safe), Hold (ask a human), or Block (stop, e.g. a leaked password).
+3. **Records** it, so there's always a clear trail of what the AI did.
+4. **Scores** each AI tool over time, so you know which ones to trust.
 
 #### Why it matters
-As AI tools move from *suggesting* to *acting*, the bottleneck becomes trust and
-accountability, not generation. ~95% of enterprise GenAI pilots stall on
-governance, not model quality. Sentinel is the missing control point.
+About 95% of company AI projects stall — not because the AI is dumb, but because
+no one can safely review and trust what it produces. Sentinel is the missing
+safety check.
 
-#### Not a code reviewer
-A reviewer asks *"is this code good?"*. Sentinel asks *"is this AI change safe to
-let through without a human, and which tools can we trust?"* — gate + audit +
-appraise.
+*Built by Avi Kishore Soni · [GitHub](https://github.com/avisoni729/sentinel)*
 """)

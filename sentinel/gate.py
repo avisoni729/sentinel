@@ -4,8 +4,8 @@ from .rules import score_rules
 from .classifier import score_llm
 
 
-def evaluate(action: Action) -> Decision:
-    risk, reasons, block = score_rules(action.diff)
+def evaluate(action: Action, snippet=False) -> Decision:
+    risk, reasons, block = score_rules(action.diff, snippet=snippet)
 
     llm = score_llm(action.diff)
     if llm:

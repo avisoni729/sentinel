@@ -44,8 +44,12 @@ def _codeish(path):
     return not (p.endswith(".md") or p.startswith("docs/") or "test" in p)
 
 
-def score_rules(diff):
-    """Return (risk 0-3, reasons, block_for_secret)."""
+def score_rules(diff, snippet=False):
+    """Return (risk 0-3, reasons, block_for_secret).
+
+    snippet=True means a single pasted snippet with no repo context, so the
+    repo-level 'missing tests' heuristic is skipped.
+    """
     reasons = []
     risk = 0
     block = False
@@ -84,12 +88,13 @@ def score_rules(diff):
         risk = max(risk, 1)
         reasons.append(f"Medium-size change ({adds} added lines)")
 
-    touches_src = any(f.endswith((".py", ".js", ".ts", ".go", ".java")) and _codeish(f)
-                      for f in files)
-    touches_test = any("test" in f.lower() for f in files)
-    if touches_src and not touches_test:
-        risk = max(risk, 1)
-        reasons.append("Code changed but no tests touched")
+    if not snippet:
+        touches_src = any(f.endswith((".py", ".js", ".ts", ".go", ".java")) and _codeish(f)
+                          for f in files)
+        touches_test = any("test" in f.lower() for f in files)
+        if touches_src and not touches_test:
+            risk = max(risk, 1)
+            reasons.append("Code changed but no tests touched")
 
     if not reasons:
         reasons.append("No risk signals found")
