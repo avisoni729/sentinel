@@ -4,7 +4,10 @@
 > through, Sentinel **risk-scores it, decides pass / hold / block, logs it, and
 > scores each AI tool's reliability over time.**
 
-**▶ Live demo:** _add your Streamlit Cloud link here_
+[![CI](https://github.com/avisoni729/sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/avisoni729/sentinel/actions)
+
+**▶ Live demo:** _coming soon (Streamlit Cloud)_
+&nbsp;·&nbsp; **Repo:** https://github.com/avisoni729/sentinel
 &nbsp;·&nbsp; **Author:** Avi Kishore Soni
 
 ---
