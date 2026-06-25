@@ -7,3 +7,5 @@ audit_log.jsonl
 .env
 .DS_Store
 *.log
+
+INTERVIEW_PREP.md

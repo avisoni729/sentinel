@@ -1,0 +1,6 @@
+# Extra deps for the agentic risk investigator (sentinel/agent.py, agent_demo.py).
+# Needs SENTINEL_LLM=1 + GEMINI_API_KEY and a clean network to run live.
+langgraph>=0.2
+langchain-core>=0.3
+langchain-google-genai>=2.0
+langsmith>=0.1

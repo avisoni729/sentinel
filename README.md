@@ -106,6 +106,31 @@ check replaced with `if True`, a password hashed with MD5) and one deliberately
 conservative size flag. Those residuals are exactly what the optional LLM
 classifier on the roadmap is for.
 
+## Agentic risk investigator
+
+For changes where fixed rules fall short, Sentinel runs a **tool-using agent**
+(LangGraph + Gemini, traced with LangSmith) that investigates before it judges —
+instead of one blind LLM call:
+
+1. **Plans** what to check.
+2. **Uses tools** — `read_code`, `search_repo` (blast radius), `check_tests`,
+   `run_rules`.
+3. **Observes** the results and loops.
+4. **Decides** a verdict with evidence.
+
+This catches *semantic* risk the rules miss — e.g. an authorization check
+replaced with `return True` — by reading the function and seeing where it's used.
+
+```bash
+pip install -r requirements-agent.txt
+set SENTINEL_LLM=1
+set GEMINI_API_KEY=...        # plus LANGSMITH_API_KEY/LANGSMITH_TRACING=true for traces
+python agent_demo.py
+```
+
+Code: `sentinel/agent.py` (loop) · `sentinel/agent_tools.py` (tools). Tools and
+verdict-parsing are unit-tested; the live loop needs the key + a clean network.
+
 ## GitHub App — inline PR comments
 
 Beyond the CLI/CI, Sentinel runs as a **GitHub App** that comments on the exact
