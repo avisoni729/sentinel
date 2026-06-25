@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/avisoni729/sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/avisoni729/sentinel/actions)
 
-**▶ Live demo:** _coming soon (Streamlit Cloud)_
+**▶ Live demo:** https://sentinel-e8aejqk3bdnmvgz36efcyh.streamlit.app
 &nbsp;·&nbsp; **Repo:** https://github.com/avisoni729/sentinel
 &nbsp;·&nbsp; **Author:** Avi Kishore Soni
 
