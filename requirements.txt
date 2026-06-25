@@ -2,6 +2,12 @@
 streamlit>=1.36
 truststore>=0.9   # use the OS cert store (works behind intercepting proxies)
 
+# AI agent (powers the "AI agent" tab in the live demo)
+langgraph>=0.2
+langchain-core>=0.3
+langchain-google-genai>=2.0
+langsmith>=0.1
+
 # Optional: enables the live LLM risk classifier (set SENTINEL_LLM=1).
 # Not required to run — the gate works on rules alone.
 #   google-genai>=1.0

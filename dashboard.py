@@ -4,6 +4,7 @@ Local:   streamlit run dashboard.py
 Hosted:  Streamlit Community Cloud, entry file dashboard.py
 """
 import json
+import os
 import time
 
 import streamlit as st
@@ -14,6 +15,29 @@ from sentinel.analyze import find_findings
 from sentinel.intake import as_diff
 from sentinel import store, seed
 
+
+def _load_key():
+    """Pull a Gemini key from Streamlit secrets (cloud) or a local .env."""
+    try:
+        if "GEMINI_API_KEY" in st.secrets:
+            os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
+            os.environ.setdefault("SENTINEL_LLM", "1")
+    except Exception:
+        pass
+    envf = os.path.join(os.path.dirname(__file__), ".env")
+    if os.path.exists(envf):
+        for line in open(envf, encoding="utf-8"):
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ[k.strip()] = v.strip()
+
+
+def _agent_ready():
+    return os.environ.get("SENTINEL_LLM") == "1" and bool(os.environ.get("GEMINI_API_KEY"))
+
+
+_load_key()
 store.init()
 seed.seed_if_empty()
 
@@ -38,6 +62,27 @@ EXAMPLES = [
      'def add(a, b):\n    return a + b'),
 ]
 
+# A prebuilt scenario for the AI agent: an authorization check quietly removed.
+AGENT_REPO = {
+    "src/api/share.py": (
+        "def can_edit(user, doc):\n"
+        "    if user.id == doc.owner_id:\n"
+        "        return True\n"
+        "    return False\n\n"
+        "def delete_doc(user, doc):\n"
+        "    if can_edit(user, doc):\n"
+        "        doc.delete()\n"
+    ),
+}
+AGENT_DIFF = (
+    "+++ b/src/api/share.py\n"
+    "@@ -1,3 +1,1 @@ def can_edit(user, doc):\n"
+    "-    if user.id == doc.owner_id:\n"
+    "-        return True\n"
+    "-    return False\n"
+    "+    return True  # allow all\n"
+)
+
 st.title("🛡️ Sentinel")
 st.markdown(
     "**AI tools now write a lot of code on their own — and some of it is risky** "
@@ -46,7 +91,8 @@ st.markdown(
     "human), or **Block** — *before* it can cause harm. Try it below 👇"
 )
 
-tab_try, tab_board, tab_about = st.tabs(["▶ Try it", "📊 Live board", "ℹ️ What is this?"])
+tab_try, tab_agent, tab_board, tab_about = st.tabs(
+    ["▶ Try it", "🤖 AI agent", "📊 Live board", "ℹ️ What is this?"])
 
 # ---------------------------------------------------------------- Try it
 with tab_try:
@@ -82,6 +128,45 @@ with tab_try:
                 st.caption("Flagged lines:")
                 for f in findings:
                     st.write(f"  line {f.line}: {f.message}")
+
+# ---------------------------------------------------------------- AI agent
+with tab_agent:
+    st.subheader("🤖 The AI agent — it investigates, then judges")
+    st.markdown(
+        "The checks on the *Try it* tab use fixed rules. **This is a real AI agent:** "
+        "it plans what to look at, uses tools to read the code and see where it's "
+        "used, then decides — catching risks the fixed rules miss."
+    )
+    st.markdown("**The change it will inspect** — an access check quietly removed:")
+    st.code("- if user.id == doc.owner_id:   # only the owner could edit\n"
+            "+ return True                    # now ANYONE can edit", language="python")
+    st.caption("The fixed rules rate this low-risk and would let it pass. Watch the agent.")
+
+    if not _agent_ready():
+        st.info("The live agent needs a Gemini API key — add it as a Streamlit "
+                "**secret** `GEMINI_API_KEY` (or a local `.env`). The rules demo "
+                "on the other tabs works without it.")
+    elif st.button("🔍 Run the AI agent", type="primary"):
+        decision, trace = None, None
+        with st.spinner("The agent is investigating…"):
+            try:
+                from sentinel.agent import investigate
+                action = Action("DEMO-authz", "ai-agent", "code_pr", AGENT_DIFF)
+                decision, trace = investigate(action, AGENT_REPO)
+                store.save_decision(decision)
+            except Exception as e:
+                st.error("The agent couldn't finish — usually the free-tier rate "
+                         "limit. Try again in a minute.")
+                st.caption(str(e)[:200])
+        if decision:
+            st.markdown("**How the agent reasoned:**")
+            for step in trace:
+                st.write(step)
+            color, head, _ = RESULT[decision.verdict]
+            st.markdown(f"### :{color}[{head}]  ·  risk {decision.risk}/3")
+            for r in decision.reasons:
+                st.write("•", r)
+            st.success("The fixed rules missed this — the agent caught it by investigating.")
 
 # ---------------------------------------------------------------- Board
 with tab_board:
