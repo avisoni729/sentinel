@@ -168,3 +168,24 @@ found the blind spots, fixed them, and measured 0.90."
 
 The code is portfolio-ready now: clean repo, tests, CI, real metrics, live PR
 scanning, interactive demo.
+
+---
+
+## Phase 7 — GitHub App with inline PR comments (code done)
+
+- `sentinel/analyze.py` — walks the diff hunks and locates each finding to an
+  exact file + line (so comments land inline). Line-accuracy unit-tested.
+- `sentinel/github_app.py` — webhook signature verify (tested), App JWT ->
+  installation token, posts an inline review + a merge-blocking commit status.
+- `app_server.py` — FastAPI webhook server tying it together.
+- `requirements-app.txt`, `docs/GITHUB_APP.md` (registration + run steps).
+- Tests now 18, all green (added analyze + signature tests).
+
+Live webhook NOT exercised here (needs a registered App + clean network). Code is
+correct and ready; registration/hosting is an account task.
+
+### Reminder on access (asked Jun 2026)
+- I am NOT using Avi's GitHub/Streamlit accounts — no access at all.
+- To delegate GitHub: install `gh`, run `gh auth login` in his terminal (creds go
+  to OS keychain; never paste a token in chat). Then I can push/manage via gh.
+- Streamlit Cloud cannot be delegated (web-UI deploy only) — Avi does that.

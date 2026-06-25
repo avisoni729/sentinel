@@ -1,0 +1,7 @@
+# Extra deps for running the GitHub App webhook server (app_server.py).
+# Not needed for the dashboard, CLI, eval, or tests.
+fastapi>=0.110
+uvicorn>=0.29
+PyJWT>=2.8
+cryptography>=42
+certifi>=2024.0

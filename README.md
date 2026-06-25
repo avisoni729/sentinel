@@ -103,6 +103,17 @@ check replaced with `if True`, a password hashed with MD5) and one deliberately
 conservative size flag. Those residuals are exactly what the optional LLM
 classifier on the roadmap is for.
 
+## GitHub App — inline PR comments
+
+Beyond the CLI/CI, Sentinel runs as a **GitHub App** that comments on the exact
+risky lines of a pull request and sets a merge-blocking status:
+
+- `app_server.py` — FastAPI webhook (signature-verified)
+- `sentinel/analyze.py` — locates each finding to a file + line
+- `sentinel/github_app.py` — App auth + posts the inline review and status
+
+Setup and run steps: [docs/GITHUB_APP.md](docs/GITHUB_APP.md).
+
 ## Continuous integration
 
 Two GitHub Actions workflows ship with the repo:
@@ -119,8 +130,8 @@ Enable the LLM classifier by setting `SENTINEL_LLM=1` and a `GEMINI_API_KEY`
 - [x] Evaluation harness — measure the risk scorer (precision / recall)
 - [x] Scan real GitHub pull requests (CLI + CI workflow)
 - [x] CI: tests + eval on every push, Sentinel gating its own PRs
+- [x] GitHub App with inline PR comments (code + tests; needs registration to run)
 - [ ] LLM classifier verified end-to-end (code ready; needs key + connectivity)
-- [ ] GitHub App with inline PR comments (richer than the CI check)
 - [ ] Connectors beyond code: email, database, deploy actions
 - [ ] Policy as config (per-team rules)
 
