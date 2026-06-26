@@ -63,6 +63,9 @@ st.markdown("""
 .stApp{
   background:
     radial-gradient(130% 90% at 50% -5%, rgba(255,251,238,.55), rgba(255,251,238,0) 55%),
+    radial-gradient(55% 40% at 22% 18%, rgba(150,98,46,.11), rgba(150,98,46,0) 60%),
+    radial-gradient(50% 45% at 82% 68%, rgba(120,66,28,.12), rgba(120,66,28,0) 60%),
+    radial-gradient(45% 40% at 70% 12%, rgba(94,53,24,.08), rgba(94,53,24,0) 60%),
     radial-gradient(150% 130% at 50% 110%, rgba(50,32,16,.20), rgba(50,32,16,0) 60%),
     var(--canvas);
   color:var(--ink);
@@ -85,7 +88,9 @@ code, pre, .mono{ font-family:'JetBrains Mono', monospace; }
   font-family:'Oswald', sans-serif; font-weight:700; font-size:1.7rem; text-transform:uppercase;
   color:#F2E8CF; letter-spacing:2px; box-shadow:0 3px 9px #0004, inset 0 1px 0 #ffffff20;
   border:1px solid #00000030; }
-.v-pass{ background:var(--olive);} .v-hold{ background:var(--ochre);} .v-block{ background:var(--oxblood);}
+.v-pass{ background:linear-gradient(180deg,#67744b,#454f30);}
+.v-hold{ background:linear-gradient(180deg,#bd8420,#875c12);}
+.v-block{ background:linear-gradient(180deg,#8f352a,#5f1d15);}
 
 .meter{ height:9px; border-radius:2px; background:#00000014; overflow:hidden; margin:11px 0 6px; max-width:300px; }
 .meter > span{ display:block; height:100%; }
@@ -124,8 +129,8 @@ footer{ visibility:hidden; height:0; }
 .brand{ font-family:'Oswald', sans-serif; font-weight:700; font-size:2.6rem;
   text-transform:uppercase; letter-spacing:2px; color:var(--ink); cursor:default;
   transition:color .6s ease, letter-spacing .6s ease, text-shadow .6s ease; }
-.brand:hover{ color:#566b4c; letter-spacing:3px;
-  text-shadow:1px 1px 0 #7e2b2233, -1px 0 2px #34452f66; }
+.brand:hover{ color:#6e4326; letter-spacing:2.6px;
+  text-shadow:0 1px 0 #e7c79a66, 0 2px 3px #2a160bcc, -1px 0 1px #5a2e1c55; }
 .brand-sub{ font-family:'Spectral', serif; font-style:italic; color:var(--muted); font-size:1.02rem; }
 
 /* --- light, cheap animations --- */
