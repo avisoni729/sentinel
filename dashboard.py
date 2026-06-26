@@ -54,62 +54,67 @@ st.set_page_config(page_title="Sentinel", page_icon="🛡️", layout="wide")
 # --------------------------------------------------------------- look & feel
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root{
-  --paper:#F6EFDF; --canvas:#EDE4D1; --ink:#2C2117; --muted:#6F5E47;
-  --saddle:#9E4A24; --indigo:#2B4257; --stitch:#C9B68F;
-  --pass:#5E6B4F; --hold:#B07A1E; --block:#8A3324;
+  --paper:#EFE4CB; --canvas:#E6D9BE; --ink:#1F1A14; --muted:#6E5C40;
+  --oxblood:#7E2B22; --ochre:#A8741C; --olive:#59663F; --line:#C3B189;
 }
 .stApp{
   background:
-    radial-gradient(1200px 500px at 18% -8%, #F3EAD7 0%, rgba(243,234,215,0) 60%),
+    radial-gradient(130% 90% at 50% -5%, rgba(255,251,238,.55), rgba(255,251,238,0) 55%),
+    radial-gradient(150% 130% at 50% 110%, rgba(50,32,16,.20), rgba(50,32,16,0) 60%),
     var(--canvas);
   color:var(--ink);
   font-family:'Spectral', Georgia, serif;
 }
-h1,h2,h3,h4{ font-family:'Zilla Slab', Georgia, serif !important; color:var(--ink); letter-spacing:.3px; }
-h1{ border-bottom:3px double var(--saddle); padding-bottom:.18em; }
-a, a:visited{ color:var(--indigo) !important; text-decoration:underline dotted; text-underline-offset:3px; }
-p, li, label, .markdown-text-container{ font-family:'Spectral', Georgia, serif; }
+.block-container{ box-shadow: inset 0 0 160px rgba(60,40,20,.10); }
+h1,h2,h3,h4{ font-family:'Oswald', 'Arial Narrow', sans-serif !important; color:var(--ink);
+  font-weight:700; letter-spacing:.5px; }
+h1{ text-transform:uppercase; font-size:2.5rem; letter-spacing:1px;
+  border-bottom:3px solid var(--oxblood); padding-bottom:.12em; }
+h2,h3{ text-transform:uppercase; letter-spacing:.6px; font-weight:600; }
+a, a:visited{ color:var(--oxblood) !important; text-decoration:underline dotted; text-underline-offset:3px; }
+p, li, label{ font-family:'Spectral', Georgia, serif; }
 code, pre, .mono{ font-family:'JetBrains Mono', monospace; }
-small, .muted{ color:var(--muted); }
+.muted{ color:var(--muted); }
 
-.tagline{ color:var(--muted); font-size:1.05rem; }
+.tagline{ color:#3a2f20; font-size:1.08rem; line-height:1.5; }
 
-.verdict{ display:inline-block; padding:9px 22px; border-radius:5px;
-  font-family:'Zilla Slab', serif; font-weight:700; font-size:1.5rem;
-  color:#F6EFDF; letter-spacing:1px; box-shadow:0 3px 8px #0003, inset 0 1px 0 #ffffff22; }
-.v-pass{ background:var(--pass);} .v-hold{ background:var(--hold);} .v-block{ background:var(--block);}
+.verdict{ display:inline-block; padding:8px 24px; border-radius:3px;
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:1.7rem; text-transform:uppercase;
+  color:#F2E8CF; letter-spacing:2px; box-shadow:0 3px 9px #0004, inset 0 1px 0 #ffffff20;
+  border:1px solid #00000030; }
+.v-pass{ background:var(--olive);} .v-hold{ background:var(--ochre);} .v-block{ background:var(--oxblood);}
 
-.meter{ height:9px; border-radius:5px; background:#00000012; overflow:hidden; margin:10px 0 6px; max-width:280px; }
-.meter > span{ display:block; height:100%; border-radius:5px; }
+.meter{ height:9px; border-radius:2px; background:#00000014; overflow:hidden; margin:11px 0 6px; max-width:300px; }
+.meter > span{ display:block; height:100%; }
 
-.reason{ padding:5px 0 5px 14px; border-left:3px solid var(--saddle); margin:7px 0; }
+.reason{ padding:5px 0 5px 14px; border-left:3px solid var(--oxblood); margin:7px 0; }
 
-.step{ background:var(--paper); border:1px dashed var(--stitch); border-radius:6px;
+.step{ background:var(--paper); border:1px dashed var(--line); border-radius:4px;
   padding:8px 12px; margin:7px 0; font-size:.95rem; }
 
-.codeblock{ background:#241B12; color:#E9DEC8; border-radius:8px; padding:14px 12px;
+.codeblock{ background:#231A10; color:#E7D9BB; border-radius:5px; padding:14px 12px;
   font-family:'JetBrains Mono', monospace; font-size:.84rem; line-height:1.55; overflow-x:auto;
-  border:1px solid #00000033; box-shadow:inset 0 2px 10px #00000040; white-space:pre; }
-.codeblock .ln{ color:#7d6b4f; }
-.codeblock .flag{ background:#8A332455; border-left:3px solid #E0795F; display:block; padding-left:6px; }
+  border:1px solid #00000040; box-shadow:inset 0 2px 12px #00000050; white-space:pre; }
+.codeblock .ln{ color:#7c6843; }
+.codeblock .flag{ background:#7E2B2255; border-left:3px solid #C7563F; display:block; padding-left:6px; }
 
-.stButton>button{ background:var(--saddle); color:#F6EFDF; border:1px solid #00000022;
-  border-radius:6px; font-family:'Zilla Slab', serif; font-weight:600; letter-spacing:.4px;
-  padding:.45rem 1.1rem; box-shadow:0 2px 6px #0003; }
-.stButton>button:hover{ background:#86381a; color:#fff; border-color:#00000033; }
-[data-testid="stSidebar"]{ background:#E7DBC2; border-right:1px solid var(--stitch); }
-[data-testid="stMetricValue"]{ font-family:'Zilla Slab', serif; }
-.stTabs [data-baseweb="tab"]{ font-family:'Zilla Slab', serif; }
+.stButton>button{ background:var(--oxblood); color:#F2E8CF; border:1px solid #00000030;
+  border-radius:3px; font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:1px;
+  text-transform:uppercase; padding:.45rem 1.2rem; box-shadow:0 2px 7px #0004; }
+.stButton>button:hover{ background:#5f1f18; color:#fff; }
+[data-testid="stSidebar"]{ background:#DECCA6; border-right:1px solid var(--line); }
+[data-testid="stMetricValue"]{ font-family:'Oswald', sans-serif; }
+.stTabs [data-baseweb="tab"]{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.5px; }
 </style>
 """, unsafe_allow_html=True)
 
 VERDICT_UI = {
-    "ALLOW":    ("v-pass",  "PASS",  "Looks safe — no human needed.",                       "#5E6B4F"),
-    "ESCALATE": ("v-hold",  "HOLD",  "Risky — a person should review this before it goes live.", "#B07A1E"),
-    "BLOCK":    ("v-block", "BLOCK", "Stopped — this should not go through as-is.",          "#8A3324"),
+    "ALLOW":    ("v-pass",  "PASS",  "Looks safe — no human needed.",                            "#59663F"),
+    "ESCALATE": ("v-hold",  "HOLD",  "Risky — a person should review this before it goes live.",  "#A8741C"),
+    "BLOCK":    ("v-block", "BLOCK", "Stopped — this should not go through as-is.",               "#7E2B22"),
 }
 
 EXAMPLES = [
@@ -201,7 +206,6 @@ with st.sidebar:
     st.markdown("1. Read the change\n2. Score the risk\n3. Pass / Hold / Block\n"
                 "4. Log it\n5. Score each AI tool")
     st.markdown("---")
-    st.markdown("[Source code on GitHub](https://github.com/avisoni729/sentinel)")
     st.markdown("<span class='muted'>Built by Avi Kishore Soni</span>", unsafe_allow_html=True)
 
 tab_try, tab_agent, tab_board, tab_about = st.tabs(
@@ -246,7 +250,7 @@ with tab_try:
 
 # --------------------------------------------------------------- AI agent
 with tab_agent:
-    st.subheader("🤖 The AI agent — it investigates, then judges")
+    st.subheader("The AI agent — it investigates, then judges")
     st.markdown(
         "The checks on the *Try it* tab use fixed rules. **This is a real AI agent:** it plans "
         "what to look at, uses tools to read the code and see where it's used, then decides — "
@@ -351,5 +355,5 @@ For every AI-made change it **reads** it, scores the risk, **decides** Pass / Ho
 About 95% of company AI projects stall — not because the AI is weak, but because no one can
 safely review and trust what it produces. Sentinel is the missing safety check.
 
-*Built by Avi Kishore Soni · [GitHub](https://github.com/avisoni729/sentinel)*
+*Built by Avi Kishore Soni*
 """)
