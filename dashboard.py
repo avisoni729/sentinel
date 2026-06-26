@@ -57,16 +57,16 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root{
-  --paper:#ECDFC2; --canvas:#E1D1AC; --ink:#1E1810; --muted:#6A573B;
-  --oxblood:#71241B; --ochre:#9C6A16; --olive:#515E38; --line:#BCA97E;
+  --paper:#D0CFA7; --canvas:#ACAC7F; --ink:#201C10; --muted:#585536;
+  --oxblood:#71241B; --ochre:#9C6A16; --olive:#49542A; --line:#8F8F63;
 }
 .stApp{
   background:
-    radial-gradient(130% 90% at 50% -5%, rgba(255,251,238,.55), rgba(255,251,238,0) 55%),
-    radial-gradient(55% 40% at 22% 18%, rgba(150,98,46,.11), rgba(150,98,46,0) 60%),
-    radial-gradient(50% 45% at 82% 68%, rgba(120,66,28,.12), rgba(120,66,28,0) 60%),
-    radial-gradient(45% 40% at 70% 12%, rgba(94,53,24,.08), rgba(94,53,24,0) 60%),
-    radial-gradient(150% 130% at 50% 110%, rgba(50,32,16,.20), rgba(50,32,16,0) 60%),
+    radial-gradient(130% 90% at 50% -5%, rgba(255,255,238,.30), rgba(255,255,238,0) 55%),
+    radial-gradient(55% 40% at 22% 18%, rgba(90,82,40,.14), rgba(90,82,40,0) 60%),
+    radial-gradient(50% 45% at 82% 68%, rgba(70,76,34,.16), rgba(70,76,34,0) 60%),
+    radial-gradient(45% 40% at 70% 12%, rgba(60,55,26,.10), rgba(60,55,26,0) 60%),
+    radial-gradient(150% 130% at 50% 110%, rgba(28,30,14,.24), rgba(28,30,14,0) 60%),
     var(--canvas);
   color:var(--ink);
   font-family:'Spectral', Georgia, serif;
@@ -88,9 +88,9 @@ code, pre, .mono{ font-family:'JetBrains Mono', monospace; }
   font-family:'Oswald', sans-serif; font-weight:700; font-size:1.7rem; text-transform:uppercase;
   color:#F2E8CF; letter-spacing:2px; box-shadow:0 3px 9px #0004, inset 0 1px 0 #ffffff20;
   border:1px solid #00000030; }
-.v-pass{ background:linear-gradient(180deg,#67744b,#454f30);}
-.v-hold{ background:linear-gradient(180deg,#bd8420,#875c12);}
-.v-block{ background:linear-gradient(180deg,#8f352a,#5f1d15);}
+.v-pass{ background:linear-gradient(180deg,#4f5a2c,#384021);}
+.v-hold{ background:linear-gradient(180deg,#b07c1d,#7d5510);}
+.v-block{ background:linear-gradient(180deg,#8a3327,#5c1c14);}
 
 .meter{ height:9px; border-radius:2px; background:#00000014; overflow:hidden; margin:11px 0 6px; max-width:300px; }
 .meter > span{ display:block; height:100%; }
@@ -110,7 +110,7 @@ code, pre, .mono{ font-family:'JetBrains Mono', monospace; }
   border-radius:3px; font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:1px;
   text-transform:uppercase; padding:.45rem 1.2rem; box-shadow:0 2px 7px #0004; }
 .stButton>button:hover{ background:#5f1f18; color:#fff; }
-[data-testid="stSidebar"]{ background:#DECCA6; border-right:1px solid var(--line); }
+[data-testid="stSidebar"]{ background:#C3C295; border-right:1px solid var(--line); }
 [data-testid="stMetricValue"]{ font-family:'Oswald', sans-serif; }
 .stTabs [data-baseweb="tab"]{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.5px; }
 
@@ -134,30 +134,29 @@ footer{ visibility:hidden; height:0; }
 .brand-sub{ font-family:'Spectral', serif; font-style:italic; color:var(--muted); font-size:1.02rem; }
 
 /* --- dark oiled-leather app header bar --- */
-.topbar{ background:linear-gradient(180deg,#3b2614,#1f1304);
-  border:1px solid #00000055; border-bottom:4px solid var(--oxblood); border-radius:6px;
-  box-shadow:0 7px 20px #00000045, inset 0 1px 0 #ffffff12, inset 0 -14px 34px #00000055;
-  padding:15px 22px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+.topbar{ background:linear-gradient(180deg,#C9C8A0,#AEAD81);
+  border:1px solid #6f6e47; border-bottom:4px solid var(--oxblood); border-radius:6px;
+  box-shadow:0 6px 16px #00000033, inset 0 1px 0 #ffffff3a, inset 0 -10px 26px #0000001f;
+  padding:18px 24px; display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; }
 .topbar .logo{ font-size:1.7rem; filter:drop-shadow(0 1px 2px #000); }
 .topbar .appname{ position:relative; font-family:'Oswald', sans-serif; font-weight:700;
-  font-size:2.5rem; text-transform:uppercase; letter-spacing:4px; color:#E9D6AE; cursor:default;
-  text-shadow:0 1px 0 #00000088, 0 0 18px #c9863722; }
-/* on hover the clean letters slowly weather into cracked, rusted old wood */
+  font-size:3.2rem; text-transform:uppercase; letter-spacing:10px; color:#221D10; cursor:default;
+  text-shadow:0 1px 0 #ffffff45, 0 2px 3px #00000033; }
+/* on hover the letters slowly become the broken planks of an old wooden cabin */
 .topbar .appname::after{
-  content:attr(data-text); position:absolute; left:0; top:0; pointer-events:none;
-  letter-spacing:4px;
+  content:attr(data-text); position:absolute; left:0; top:0; pointer-events:none; letter-spacing:10px;
   background:
-    repeating-linear-gradient(90deg, transparent 0 5px, rgba(18,9,3,.42) 5px 6px),
-    repeating-linear-gradient(0deg, transparent 0 13px, rgba(18,9,3,.20) 13px 14px),
-    radial-gradient(60% 80% at 28% 38%, rgba(128,42,20,.78), transparent 60%),
-    radial-gradient(55% 75% at 76% 62%, rgba(96,58,26,.78), transparent 60%),
-    linear-gradient(180deg, #7d572f, #34220e);
-  -webkit-background-clip:text; background-clip:text;
-  color:transparent; -webkit-text-fill-color:transparent;
-  text-shadow:0 1px 1px #000, 1px 0 1px #00000066, -1px 1px 1px #00000040;
-  opacity:0; transition:opacity 1.6s ease; }
+    repeating-linear-gradient(0deg, transparent 0 8px, rgba(18,9,3,.55) 8px 10px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 2px, transparent 2px 6px),
+    radial-gradient(26% 34% at 30% 44%, rgba(58,30,12,.9), transparent 60%),
+    radial-gradient(22% 30% at 73% 58%, rgba(74,42,18,.85), transparent 60%),
+    linear-gradient(180deg, #7c532b, #3a2410);
+  -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
+  text-shadow:0 1px 1px #000, 1px 1px 1px #00000055;
+  filter:url(#brokenwood);
+  opacity:0; transition:opacity 1.8s ease; }
 .topbar .appname:hover::after{ opacity:1; }
-.topbar .appname-sub{ font-family:'Spectral', serif; font-style:italic; color:#C7B187; font-size:1.02rem; }
+.topbar .appname-sub{ font-family:'Spectral', serif; font-style:italic; color:#4A4730; font-size:1.05rem; }
 
 /* --- light, cheap animations --- */
 .stButton>button{ transition:transform .15s ease, box-shadow .15s ease, background .15s ease; }
@@ -170,9 +169,9 @@ footer{ visibility:hidden; height:0; }
 """, unsafe_allow_html=True)
 
 VERDICT_UI = {
-    "ALLOW":    ("v-pass",  "PASS",  "Looks safe — no human needed.",                            "#59663F"),
-    "ESCALATE": ("v-hold",  "HOLD",  "Risky — a person should review this before it goes live.",  "#A8741C"),
-    "BLOCK":    ("v-block", "BLOCK", "Stopped — this should not go through as-is.",               "#7E2B22"),
+    "ALLOW":    ("v-pass",  "PASS",  "Looks safe — no human needed.",                            "#49542A"),
+    "ESCALATE": ("v-hold",  "HOLD",  "Risky — a person should review this before it goes live.",  "#9C6A16"),
+    "BLOCK":    ("v-block", "BLOCK", "Stopped — this should not go through as-is.",               "#71241B"),
 }
 
 EXAMPLES = [
@@ -250,6 +249,12 @@ def agent_error_message(e):
 
 
 # --------------------------------------------------------------- header
+st.markdown(
+    "<svg width='0' height='0' style='position:absolute'>"
+    "<filter id='brokenwood'>"
+    "<feTurbulence type='fractalNoise' baseFrequency='0.012 0.045' numOctaves='2' seed='7' result='n'/>"
+    "<feDisplacementMap in='SourceGraphic' in2='n' scale='7' xChannelSelector='R' yChannelSelector='G'/>"
+    "</filter></svg>", unsafe_allow_html=True)
 st.markdown(
     "<div class='topbar'>"
     "<span class='logo'>🛡️</span>"
