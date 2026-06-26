@@ -139,12 +139,24 @@ footer{ visibility:hidden; height:0; }
   box-shadow:0 7px 20px #00000045, inset 0 1px 0 #ffffff12, inset 0 -14px 34px #00000055;
   padding:15px 22px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
 .topbar .logo{ font-size:1.7rem; filter:drop-shadow(0 1px 2px #000); }
-.topbar .appname{ font-family:'Oswald', sans-serif; font-weight:700; font-size:2.5rem;
-  text-transform:uppercase; letter-spacing:4px; color:#E9D6AE; cursor:default;
-  text-shadow:0 1px 0 #00000088, 0 0 18px #c9863722;
-  transition:color .6s ease, letter-spacing .6s ease, text-shadow .6s ease; }
-.topbar .appname:hover{ color:#c99a57; letter-spacing:5px;
-  text-shadow:0 1px 0 #000, 0 2px 7px #000, 0 0 24px #c9863755; }
+.topbar .appname{ position:relative; font-family:'Oswald', sans-serif; font-weight:700;
+  font-size:2.5rem; text-transform:uppercase; letter-spacing:4px; color:#E9D6AE; cursor:default;
+  text-shadow:0 1px 0 #00000088, 0 0 18px #c9863722; }
+/* on hover the clean letters slowly weather into cracked, rusted old wood */
+.topbar .appname::after{
+  content:attr(data-text); position:absolute; left:0; top:0; pointer-events:none;
+  letter-spacing:4px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 5px, rgba(18,9,3,.42) 5px 6px),
+    repeating-linear-gradient(0deg, transparent 0 13px, rgba(18,9,3,.20) 13px 14px),
+    radial-gradient(60% 80% at 28% 38%, rgba(128,42,20,.78), transparent 60%),
+    radial-gradient(55% 75% at 76% 62%, rgba(96,58,26,.78), transparent 60%),
+    linear-gradient(180deg, #7d572f, #34220e);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  text-shadow:0 1px 1px #000, 1px 0 1px #00000066, -1px 1px 1px #00000040;
+  opacity:0; transition:opacity 1.6s ease; }
+.topbar .appname:hover::after{ opacity:1; }
 .topbar .appname-sub{ font-family:'Spectral', serif; font-style:italic; color:#C7B187; font-size:1.02rem; }
 
 /* --- light, cheap animations --- */
@@ -241,7 +253,7 @@ def agent_error_message(e):
 st.markdown(
     "<div class='topbar'>"
     "<span class='logo'>🛡️</span>"
-    "<span class='appname'>Sentinel</span>"
+    "<span class='appname' data-text='Sentinel'>Sentinel</span>"
     "<span class='appname-sub'>control plane for AI-generated code</span>"
     "</div>", unsafe_allow_html=True)
 st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
