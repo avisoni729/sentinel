@@ -57,8 +57,8 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root{
-  --paper:#EFE4CB; --canvas:#E6D9BE; --ink:#1F1A14; --muted:#6E5C40;
-  --oxblood:#7E2B22; --ochre:#A8741C; --olive:#59663F; --line:#C3B189;
+  --paper:#ECDFC2; --canvas:#E1D1AC; --ink:#1E1810; --muted:#6A573B;
+  --oxblood:#71241B; --ochre:#9C6A16; --olive:#515E38; --line:#BCA97E;
 }
 .stApp{
   background:
@@ -132,6 +132,20 @@ footer{ visibility:hidden; height:0; }
 .brand:hover{ color:#6e4326; letter-spacing:2.6px;
   text-shadow:0 1px 0 #e7c79a66, 0 2px 3px #2a160bcc, -1px 0 1px #5a2e1c55; }
 .brand-sub{ font-family:'Spectral', serif; font-style:italic; color:var(--muted); font-size:1.02rem; }
+
+/* --- dark oiled-leather app header bar --- */
+.topbar{ background:linear-gradient(180deg,#3b2614,#1f1304);
+  border:1px solid #00000055; border-bottom:4px solid var(--oxblood); border-radius:6px;
+  box-shadow:0 7px 20px #00000045, inset 0 1px 0 #ffffff12, inset 0 -14px 34px #00000055;
+  padding:15px 22px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+.topbar .logo{ font-size:1.7rem; filter:drop-shadow(0 1px 2px #000); }
+.topbar .appname{ font-family:'Oswald', sans-serif; font-weight:700; font-size:2.5rem;
+  text-transform:uppercase; letter-spacing:4px; color:#E9D6AE; cursor:default;
+  text-shadow:0 1px 0 #00000088, 0 0 18px #c9863722;
+  transition:color .6s ease, letter-spacing .6s ease, text-shadow .6s ease; }
+.topbar .appname:hover{ color:#c99a57; letter-spacing:5px;
+  text-shadow:0 1px 0 #000, 0 2px 7px #000, 0 0 24px #c9863755; }
+.topbar .appname-sub{ font-family:'Spectral', serif; font-style:italic; color:#C7B187; font-size:1.02rem; }
 
 /* --- light, cheap animations --- */
 .stButton>button{ transition:transform .15s ease, box-shadow .15s ease, background .15s ease; }
@@ -225,9 +239,12 @@ def agent_error_message(e):
 
 # --------------------------------------------------------------- header
 st.markdown(
-    "<div class='appbar'><span class='brand'>🛡️ Sentinel</span>"
-    "<span class='brand-sub'>a control plane for AI-generated code</span></div>",
-    unsafe_allow_html=True)
+    "<div class='topbar'>"
+    "<span class='logo'>🛡️</span>"
+    "<span class='appname'>Sentinel</span>"
+    "<span class='appname-sub'>control plane for AI-generated code</span>"
+    "</div>", unsafe_allow_html=True)
+st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 st.markdown(
     "<p class='tagline'>AI now writes a lot of code on its own — and some of it is risky. "
     "Sentinel reads each AI-made change and decides <b>Pass</b>, <b>Hold</b> (ask a human), "
