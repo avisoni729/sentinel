@@ -47,142 +47,81 @@ try:
     store.init()
     seed.seed_if_empty()
 except Exception:
-    pass   # the page still renders even if the demo data can't seed
+    pass
 
 st.set_page_config(page_title="Sentinel", page_icon="🛡️", layout="wide")
 
-# --------------------------------------------------------------- look & feel
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+# --------------------------------------------------------------- theme
+st.session_state.setdefault("dark_mode", False)
+DARK = st.session_state["dark_mode"]
 
-:root{
-  --paper:#ECDFC2; --canvas:#E1D1AC; --ink:#1E1810; --muted:#6A573B;
-  --oxblood:#71241B; --ochre:#9C6A16; --olive:#515E38; --line:#BCA97E;
-}
-.stApp{
-  background:
-    radial-gradient(130% 90% at 50% -5%, rgba(255,251,238,.55), rgba(255,251,238,0) 55%),
-    radial-gradient(55% 40% at 22% 18%, rgba(150,98,46,.11), rgba(150,98,46,0) 60%),
-    radial-gradient(50% 45% at 82% 68%, rgba(120,66,28,.12), rgba(120,66,28,0) 60%),
-    radial-gradient(45% 40% at 70% 12%, rgba(94,53,24,.08), rgba(94,53,24,0) 60%),
-    radial-gradient(150% 130% at 50% 110%, rgba(50,32,16,.20), rgba(50,32,16,0) 60%),
-    var(--canvas);
-  color:var(--ink);
-  font-family:'Spectral', Georgia, serif;
-}
-.block-container{ box-shadow: inset 0 0 160px rgba(60,40,20,.10); }
-h1,h2,h3,h4{ font-family:'Oswald', 'Arial Narrow', sans-serif !important; color:var(--ink);
-  font-weight:700; letter-spacing:.5px; }
-h1{ text-transform:uppercase; font-size:2.5rem; letter-spacing:1px;
-  border-bottom:3px solid var(--oxblood); padding-bottom:.12em; }
-h2,h3{ text-transform:uppercase; letter-spacing:.6px; font-weight:600; }
-a, a:visited{ color:var(--oxblood) !important; text-decoration:underline dotted; text-underline-offset:3px; }
-p, li, label{ font-family:'Spectral', Georgia, serif; }
-code, pre, .mono{ font-family:'JetBrains Mono', monospace; }
-.muted{ color:var(--muted); }
+LIGHT = dict(bg="#F4F7FB", card="#FFFFFF", border="#E2E8F0", ink="#0F172A", text="#334155",
+             muted="#64748B", primary="#2563EB", primaryd="#1D4ED8", paneltint="#F8FAFC",
+             codebg="#0F172A", codefg="#E2E8F0", pass_="#16A34A", hold="#D97706",
+             block="#DC2626", inputbg="#FFFFFF")
+DARKP = dict(bg="#0B1220", card="#172033", border="#2A3550", ink="#F1F5F9", text="#CBD5E1",
+             muted="#94A3B8", primary="#3B82F6", primaryd="#2563EB", paneltint="#0F1A2E",
+             codebg="#0B1120", codefg="#E2E8F0", pass_="#22C55E", hold="#F59E0B",
+             block="#EF4444", inputbg="#0F1A2E")
 
-.tagline{ color:#3a2f20; font-size:1.08rem; line-height:1.5; }
+CSS = """<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+.stApp{ background:%(bg)s; color:%(text)s; font-family:'Inter', system-ui, sans-serif; }
+.block-container{ padding-top:1.1rem; }
+h1,h2,h3,h4{ font-family:'Inter', sans-serif; color:%(ink)s; font-weight:700; letter-spacing:-.2px; }
+p,li,label,span{ color:%(text)s; }
+a,a:visited{ color:%(primary)s !important; text-decoration:none; }
+a:hover{ text-decoration:underline; }
+.muted{ color:%(muted)s !important; }
 
-.verdict{ display:inline-block; padding:8px 24px; border-radius:3px;
-  font-family:'Oswald', sans-serif; font-weight:700; font-size:1.7rem; text-transform:uppercase;
-  color:#F2E8CF; letter-spacing:2px; box-shadow:0 3px 9px #0004, inset 0 1px 0 #ffffff20;
-  border:1px solid #00000030; }
-.v-pass{ background:linear-gradient(180deg,#67744b,#454f30);}
-.v-hold{ background:linear-gradient(180deg,#bd8420,#875c12);}
-.v-block{ background:linear-gradient(180deg,#8f352a,#5f1d15);}
+.appbar{ background:%(card)s; border:1px solid %(border)s; border-radius:14px;
+  padding:16px 22px; box-shadow:0 1px 3px rgba(15,23,42,.06); }
+.appbar .brand{ display:flex; align-items:center; gap:14px; }
+.appbar .logo{ font-size:2rem; line-height:1; }
+.appbar .name{ font-weight:800; font-size:2.1rem; letter-spacing:-1px; color:%(ink)s; line-height:1; }
+.appbar .sub{ color:%(muted)s; margin-top:4px; font-size:1rem; }
+.tagline{ color:%(text)s; font-size:1.08rem; line-height:1.55; }
 
-.meter{ height:9px; border-radius:2px; background:#00000014; overflow:hidden; margin:11px 0 6px; max-width:300px; }
-.meter > span{ display:block; height:100%; }
+.verdict{ display:inline-block; padding:8px 24px; border-radius:10px; font-weight:800;
+  font-size:1.35rem; letter-spacing:.4px; color:#fff; }
+.v-pass{ background:%(pass_)s; } .v-hold{ background:%(hold)s; } .v-block{ background:%(block)s; }
+.meter{ height:9px; border-radius:6px; background:%(border)s; overflow:hidden; margin:10px 0 6px; max-width:300px; }
+.meter>span{ display:block; height:100%%; }
+.reason{ padding:6px 0 6px 14px; border-left:3px solid %(primary)s; margin:7px 0; color:%(text)s; }
+.step{ background:%(paneltint)s; border:1px solid %(border)s; border-radius:8px; padding:8px 12px; margin:7px 0; color:%(text)s; }
 
-.reason{ padding:5px 0 5px 14px; border-left:3px solid var(--oxblood); margin:7px 0; }
+.codeblock{ background:%(codebg)s; color:%(codefg)s; border-radius:10px; padding:14px;
+  font-family:'JetBrains Mono', monospace; font-size:.85rem; line-height:1.55; overflow-x:auto;
+  white-space:pre; border:1px solid %(border)s; }
+.codeblock .ln{ color:#64748B; }
+.codeblock .flag{ background:rgba(220,38,38,.22); border-left:3px solid %(block)s; display:block; padding-left:6px; }
 
-.step{ background:var(--paper); border:1px dashed var(--line); border-radius:4px;
-  padding:8px 12px; margin:7px 0; font-size:.95rem; }
+.stButton>button{ background:%(primary)s; color:#fff; border:none; border-radius:10px;
+  font-weight:700; letter-spacing:.2px; padding:.55rem 1.2rem;
+  box-shadow:0 1px 3px rgba(37,99,235,.35); transition:all .15s ease; }
+.stButton>button:hover{ background:%(primaryd)s; transform:translateY(-1px); }
+.stTextArea textarea{ background:%(inputbg)s; color:%(ink)s; border:1px solid %(border)s; border-radius:10px; }
 
-.codeblock{ background:#231A10; color:#E7D9BB; border-radius:5px; padding:14px 12px;
-  font-family:'JetBrains Mono', monospace; font-size:.84rem; line-height:1.55; overflow-x:auto;
-  border:1px solid #00000040; box-shadow:inset 0 2px 12px #00000050; white-space:pre; }
-.codeblock .ln{ color:#7c6843; }
-.codeblock .flag{ background:#7E2B2255; border-left:3px solid #C7563F; display:block; padding-left:6px; }
+.stTabs [data-baseweb="tab"]{ font-family:'Inter'; font-weight:600; color:%(muted)s; }
+.stTabs [aria-selected="true"]{ color:%(primary)s !important; }
+[data-testid="stSidebar"]{ background:%(card)s; border-right:1px solid %(border)s; }
+[data-testid="stMetricValue"]{ color:%(ink)s; font-weight:800; }
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *{ color:%(muted)s !important; }
 
-.stButton>button{ background:var(--oxblood); color:#F2E8CF; border:1px solid #00000030;
-  border-radius:3px; font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:1px;
-  text-transform:uppercase; padding:.45rem 1.2rem; box-shadow:0 2px 7px #0004; }
-.stButton>button:hover{ background:#5f1f18; color:#fff; }
-[data-testid="stSidebar"]{ background:#DECCA6; border-right:1px solid var(--line); }
-[data-testid="stMetricValue"]{ font-family:'Oswald', sans-serif; }
-.stTabs [data-baseweb="tab"]{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.5px; }
+.feat{ background:%(card)s; border:1px solid %(border)s; border-radius:12px; padding:14px 16px; height:100%%; }
+.feat .ic{ font-size:1.3rem; } .feat .t{ font-weight:700; color:%(ink)s; } .feat .d{ color:%(muted)s; font-size:.9rem; }
 
-/* --- lock down Streamlit chrome: no menu / source / fork / edit links --- */
-#MainMenu{ visibility:hidden; }
-header{ visibility:hidden; height:0; }
-footer{ visibility:hidden; height:0; }
-[data-testid="stToolbar"]{ display:none !important; }
-[data-testid="stDecoration"]{ display:none !important; }
-[data-testid="stStatusWidget"]{ display:none !important; }
-.block-container{ padding-top:1.1rem !important; }
+#MainMenu{visibility:hidden;} header{visibility:hidden; height:0;} footer{visibility:hidden; height:0;}
+[data-testid="stToolbar"]{display:none !important;} [data-testid="stDecoration"]{display:none !important;}
+[data-testid="stStatusWidget"]{display:none !important;}
+</style>"""
 
-/* --- top app-bar / brand, weathers to a patina on hover --- */
-.appbar{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
-  border-bottom:3px solid var(--oxblood); padding-bottom:8px; margin:0 0 10px; }
-.brand{ font-family:'Oswald', sans-serif; font-weight:700; font-size:2.6rem;
-  text-transform:uppercase; letter-spacing:2px; color:var(--ink); cursor:default;
-  transition:color .6s ease, letter-spacing .6s ease, text-shadow .6s ease; }
-.brand:hover{ color:#6e4326; letter-spacing:2.6px;
-  text-shadow:0 1px 0 #e7c79a66, 0 2px 3px #2a160bcc, -1px 0 1px #5a2e1c55; }
-.brand-sub{ font-family:'Spectral', serif; font-style:italic; color:var(--muted); font-size:1.02rem; }
-
-/* --- dark oiled-leather app header bar --- */
-.topbar{ background:linear-gradient(180deg,#C9C8A0,#AEAD81);
-  border:1px solid #6f6e47; border-bottom:4px solid var(--oxblood); border-radius:6px;
-  box-shadow:0 6px 16px #00000033, inset 0 1px 0 #ffffff3a, inset 0 -10px 26px #0000001f;
-  padding:18px 24px 16px; overflow:hidden; }
-.topbar-row{ display:flex; align-items:baseline; gap:14px; }
-.topbar .logo{ font-size:1.7rem; filter:drop-shadow(0 1px 2px #00000080); }
-.topbar .appname{ position:relative; display:inline-block; transform:scaleX(1.1); transform-origin:left center;
-  font-family:'Oswald', sans-serif; font-weight:700; font-size:3.3rem; line-height:1; text-transform:uppercase;
-  letter-spacing:9px; color:#6E4A26; cursor:default;
-  text-shadow:0 1px 0 #ffffff45, 0 2px 3px #00000022; }
-/* on hover the letters break into the dark-brown planks of an old wooden cabin */
-.topbar .appname::after{
-  content:attr(data-text); position:absolute; left:0; top:0; pointer-events:none; letter-spacing:9px;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 7px, rgba(46,28,12,.58) 7px 10px),
-    repeating-linear-gradient(90deg, rgba(40,24,10,.10) 0 2px, transparent 2px 6px),
-    radial-gradient(26% 34% at 30% 44%, rgba(72,44,20,.9), transparent 60%),
-    radial-gradient(22% 30% at 73% 58%, rgba(88,54,26,.85), transparent 60%),
-    linear-gradient(180deg, #8a5e30, #4a3019);
-  -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
-  text-shadow:0 1px 1px #2c1c0d, 1px 1px 1px #2c1c0d77;
-  filter:url(#brokenwood);
-  opacity:0; transition:opacity .65s ease; }
-.topbar .appname:hover::after{ opacity:1; }
-.topbar .appname-sub{ display:block; margin-top:9px; font-family:'Spectral', serif; font-style:italic; color:#43402b; font-size:1.08rem; }
-
-/* --- light, cheap animations --- */
-.stButton>button{ transition:transform .15s ease, box-shadow .15s ease, background .15s ease; }
-.stButton>button:hover{ transform:translateY(-1px); box-shadow:0 5px 12px #0005; }
-.verdict{ animation:stampIn .35s ease-out; }
-@keyframes stampIn{ from{ transform:scale(1.12) rotate(-1.5deg); opacity:0; } to{ transform:none; opacity:1; } }
-.step{ animation:fadeUp .3s ease-out; }
-@keyframes fadeUp{ from{ transform:translateY(4px); opacity:0; } to{ transform:none; opacity:1; } }
-
-/* --- readability --- */
-.stApp p, .stApp li{ font-size:1.05rem; line-height:1.62; color:#2a2316; }
-.tagline{ color:#2c2417 !important; font-size:1.14rem !important; line-height:1.55; }
-.reason{ color:#2a2316; }
-.stMarkdown strong, .stMarkdown b{ color:#1d160c; }
-[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *{ color:#5a4a30 !important; font-size:.92rem; }
-.stTabs [data-baseweb="tab"]{ font-size:1.02rem; }
-h3{ margin-top:.25rem; }
-</style>
-""", unsafe_allow_html=True)
+st.markdown(CSS % (DARKP if DARK else LIGHT), unsafe_allow_html=True)
 
 VERDICT_UI = {
-    "ALLOW":    ("v-pass",  "PASS",  "Looks safe — no human needed.",                            "#59663F"),
-    "ESCALATE": ("v-hold",  "HOLD",  "Risky — a person should review this before it goes live.",  "#A8741C"),
-    "BLOCK":    ("v-block", "BLOCK", "Stopped — this should not go through as-is.",               "#7E2B22"),
+    "ALLOW":    ("v-pass",  "PASS",  "Looks safe — no human needed."),
+    "ESCALATE": ("v-hold",  "HOLD",  "Risky — a person should review this before it goes live."),
+    "BLOCK":    ("v-block", "BLOCK", "Stopped — this should not go through as-is."),
 }
 
 EXAMPLES = [
@@ -200,31 +139,21 @@ EXAMPLES = [
 
 AGENT_REPO = {
     "src/api/share.py": (
-        "def can_edit(user, doc):\n"
-        "    if user.id == doc.owner_id:\n"
-        "        return True\n"
-        "    return False\n\n"
-        "def delete_doc(user, doc):\n"
-        "    if can_edit(user, doc):\n"
-        "        doc.delete()\n"
-    ),
+        "def can_edit(user, doc):\n    if user.id == doc.owner_id:\n        return True\n"
+        "    return False\n\ndef delete_doc(user, doc):\n    if can_edit(user, doc):\n        doc.delete()\n"),
 }
 AGENT_DIFF = (
-    "+++ b/src/api/share.py\n"
-    "@@ -1,3 +1,1 @@ def can_edit(user, doc):\n"
-    "-    if user.id == doc.owner_id:\n"
-    "-        return True\n"
-    "-    return False\n"
-    "+    return True  # allow all\n"
-)
+    "+++ b/src/api/share.py\n@@ -1,3 +1,1 @@ def can_edit(user, doc):\n"
+    "-    if user.id == doc.owner_id:\n-        return True\n-    return False\n"
+    "+    return True  # allow all\n")
 
 
 # --------------------------------------------------------------- render helpers
 def show_verdict(d):
-    cls, word, meaning, color = VERDICT_UI[d.verdict]
+    cls, word, meaning = VERDICT_UI[d.verdict]
     pct = max(int(d.risk / 3 * 100), 8)
-    st.markdown(f"<div class='verdict {cls}'>{word}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='meter'><span style='width:{pct}%;background:{color}'></span></div>",
+    st.markdown(f"<span class='verdict {cls}'>{word}</span>", unsafe_allow_html=True)
+    st.markdown(f"<div class='meter'><span class='{cls}' style='width:{pct}%'></span></div>",
                 unsafe_allow_html=True)
     st.markdown(f"**{meaning}** &nbsp;&nbsp; <span class='muted'>risk {d.risk}/3</span>",
                 unsafe_allow_html=True)
@@ -235,9 +164,8 @@ def show_verdict(d):
 
 def show_code_with_flags(code, findings):
     flagged = {f.line for f in findings}
-    lines = code.splitlines() or [code]
     rows = []
-    for i, ln in enumerate(lines, 1):
+    for i, ln in enumerate(code.splitlines() or [code], 1):
         safe = html.escape(ln) if ln.strip() else "&nbsp;"
         cls = "flag" if i in flagged else ""
         rows.append(f"<span class='{cls}'><span class='ln'>{i:>2}</span>  {safe}</span>")
@@ -245,7 +173,6 @@ def show_code_with_flags(code, findings):
 
 
 def agent_error_message(e):
-    """Map any agent failure to a plain-English message."""
     m = str(e).lower()
     if isinstance(e, RuntimeError) and "needs" in m:
         return ("The AI agent isn't switched on here — it needs a Gemini API key. "
@@ -260,19 +187,18 @@ def agent_error_message(e):
 
 
 # --------------------------------------------------------------- header
-st.markdown(
-    "<svg width='0' height='0' style='position:absolute'>"
-    "<filter id='brokenwood'>"
-    "<feTurbulence type='turbulence' baseFrequency='0.07 0.11' numOctaves='3' seed='11' result='n'/>"
-    "<feDisplacementMap in='SourceGraphic' in2='n' scale='5' xChannelSelector='R' yChannelSelector='G'/>"
-    "</filter></svg>", unsafe_allow_html=True)
-st.markdown(
-    "<div class='topbar'>"
-    "<div class='topbar-row'><span class='logo'>🛡️</span>"
-    "<span class='appname' data-text='Sentinel'>Sentinel</span></div>"
-    "<span class='appname-sub'>control plane for AI-generated code</span>"
-    "</div>", unsafe_allow_html=True)
-st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+hc1, hc2 = st.columns([6, 1])
+with hc1:
+    st.markdown(
+        "<div class='appbar'><div class='brand'><span class='logo'>🛡️</span>"
+        "<div><div class='name'>Sentinel</div>"
+        "<div class='sub'>Control plane for AI-generated code</div></div></div></div>",
+        unsafe_allow_html=True)
+with hc2:
+    st.write("")
+    st.toggle("☀️ Light" if DARK else "🌙 Dark", key="dark_mode")
+
+st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
 st.markdown(
     "<p class='tagline'>AI now writes a lot of code on its own — and some of it is risky. "
     "Sentinel reads each AI-made change and decides <b>Pass</b>, <b>Hold</b> (ask a human), "
@@ -280,11 +206,9 @@ st.markdown(
 
 with st.sidebar:
     st.markdown("### Sentinel")
-    st.markdown("<span class='muted'>A control plane for AI-generated code.</span>",
-                unsafe_allow_html=True)
+    st.markdown("<span class='muted'>A control plane for AI-generated code.</span>", unsafe_allow_html=True)
     st.markdown("**How it works**")
-    st.markdown("1. Read the change\n2. Score the risk\n3. Pass / Hold / Block\n"
-                "4. Log it\n5. Score each AI tool")
+    st.markdown("1. Read the change\n2. Score the risk\n3. Pass / Hold / Block\n4. Log it\n5. Score each AI tool")
     st.markdown("---")
     st.markdown("<span class='muted'>Built by Avi Kishore Soni</span>", unsafe_allow_html=True)
 
@@ -298,15 +222,13 @@ with tab_try:
         "1. Pick an example below and click the **copy icon** (top-right of the box).\n"
         "2. **Paste** it into the box at the bottom.\n"
         "3. Press **Check this code** and see the result.\n\n*Or paste any code of your own.*")
-
     for label, code in EXAMPLES:
         st.markdown(f"**{label}**")
         st.code(code, language="python")
 
     st.divider()
-    pasted = st.text_area("Paste code here", height=170,
-                          placeholder="Paste one of the examples above…")
-    if st.button("Check this code", type="primary"):
+    pasted = st.text_area("Paste code here", height=170, placeholder="Paste one of the examples above…")
+    if st.button("🛡️  Check this code", type="primary"):
         if not pasted.strip():
             st.warning("Please paste some code first.")
         else:
@@ -317,7 +239,7 @@ with tab_try:
                 try:
                     store.save_decision(d)
                 except Exception:
-                    pass   # saving to the board is best-effort; the result still shows
+                    pass
             except Exception as e:
                 st.error("Sorry — something went wrong while checking that. "
                          "Make sure it's plain code, then try again.")
@@ -343,7 +265,7 @@ with tab_agent:
     if not _agent_ready():
         st.info("The live agent needs a Gemini API key — add it as a Streamlit **secret** "
                 "`GEMINI_API_KEY` (or a local `.env`). The rule demo on the other tabs works without it.")
-    elif st.button("🔍 Run the AI agent", type="primary"):
+    elif st.button("🔍  Run the AI agent", type="primary"):
         decision, trace, err = None, None, None
         with st.spinner("The agent is investigating…"):
             try:
@@ -373,15 +295,11 @@ with tab_board:
     except Exception:
         rows = []
         st.warning("Couldn't load the activity log right now.")
-    total = len(rows)
-    auto = sum(1 for r in rows if r["status"] == "auto-approved")
-    pending = sum(1 for r in rows if r["status"] == "pending")
-    blocked = sum(1 for r in rows if r["status"] == "blocked")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Total checks", total)
-    c2.metric("Passed", auto)
-    c3.metric("Waiting on human", pending)
-    c4.metric("Blocked", blocked)
+    c1.metric("Total checks", len(rows))
+    c2.metric("Passed", sum(1 for r in rows if r["status"] == "auto-approved"))
+    c3.metric("Waiting on human", sum(1 for r in rows if r["status"] == "pending"))
+    c4.metric("Blocked", sum(1 for r in rows if r["status"] == "blocked"))
 
     st.subheader("Waiting for a human")
     try:
@@ -405,11 +323,8 @@ with tab_board:
 
     st.subheader("Trust scorecard (per AI tool)")
     try:
-        st.table([
-            {"AI tool": a, "checks": t, "passed": au, "flagged": f, "blocked": bl,
-             "flag %": f"{r*100:.0f}%"}
-            for a, t, au, f, bl, r in store.scorecard()
-        ])
+        st.table([{"AI tool": a, "checks": t, "passed": au, "flagged": f, "blocked": bl,
+                   "flag %": f"{r*100:.0f}%"} for a, t, au, f, bl, r in store.scorecard()])
     except Exception:
         st.caption("No scorecard data yet.")
 
@@ -437,3 +352,13 @@ safely review and trust what it produces. Sentinel is the missing safety check.
 
 *Built by Avi Kishore Soni*
 """)
+
+# --------------------------------------------------------------- feature strip
+st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
+_feats = [("🛡️", "Smart protection", "Detects risky patterns"),
+          ("🧑‍⚖️", "Human in the loop", "Holds risky changes for review"),
+          ("⟨⟩", "Language-agnostic", "Pattern checks on any diff"),
+          ("⚡", "Fast &amp; reliable", "Instant, deterministic feedback")]
+for col, (ic, t, dsc) in zip(st.columns(4), _feats):
+    col.markdown(f"<div class='feat'><div class='ic'>{ic}</div>"
+                 f"<div class='t'>{t}</div><div class='d'>{dsc}</div></div>", unsafe_allow_html=True)
