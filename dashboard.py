@@ -137,10 +137,11 @@ footer{ visibility:hidden; height:0; }
 .topbar{ background:linear-gradient(180deg,#C9C8A0,#AEAD81);
   border:1px solid #6f6e47; border-bottom:4px solid var(--oxblood); border-radius:6px;
   box-shadow:0 6px 16px #00000033, inset 0 1px 0 #ffffff3a, inset 0 -10px 26px #0000001f;
-  padding:18px 24px; display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; }
-.topbar .logo{ font-size:1.7rem; filter:drop-shadow(0 1px 2px #000); }
-.topbar .appname{ position:relative; display:inline-block; transform:scaleX(1.14); transform-origin:left center;
-  font-family:'Oswald', sans-serif; font-weight:700; font-size:3.3rem; text-transform:uppercase;
+  padding:18px 24px 16px; overflow:hidden; }
+.topbar-row{ display:flex; align-items:baseline; gap:14px; }
+.topbar .logo{ font-size:1.7rem; filter:drop-shadow(0 1px 2px #00000080); }
+.topbar .appname{ position:relative; display:inline-block; transform:scaleX(1.1); transform-origin:left center;
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:3.3rem; line-height:1; text-transform:uppercase;
   letter-spacing:9px; color:#6E4A26; cursor:default;
   text-shadow:0 1px 0 #ffffff45, 0 2px 3px #00000022; }
 /* on hover the letters break into the dark-brown planks of an old wooden cabin */
@@ -157,7 +158,7 @@ footer{ visibility:hidden; height:0; }
   filter:url(#brokenwood);
   opacity:0; transition:opacity .65s ease; }
 .topbar .appname:hover::after{ opacity:1; }
-.topbar .appname-sub{ font-family:'Spectral', serif; font-style:italic; color:#4A4730; font-size:1.05rem; }
+.topbar .appname-sub{ display:block; margin-top:9px; font-family:'Spectral', serif; font-style:italic; color:#43402b; font-size:1.08rem; }
 
 /* --- light, cheap animations --- */
 .stButton>button{ transition:transform .15s ease, box-shadow .15s ease, background .15s ease; }
@@ -166,6 +167,15 @@ footer{ visibility:hidden; height:0; }
 @keyframes stampIn{ from{ transform:scale(1.12) rotate(-1.5deg); opacity:0; } to{ transform:none; opacity:1; } }
 .step{ animation:fadeUp .3s ease-out; }
 @keyframes fadeUp{ from{ transform:translateY(4px); opacity:0; } to{ transform:none; opacity:1; } }
+
+/* --- readability --- */
+.stApp p, .stApp li{ font-size:1.05rem; line-height:1.62; color:#2a2316; }
+.tagline{ color:#2c2417 !important; font-size:1.14rem !important; line-height:1.55; }
+.reason{ color:#2a2316; }
+.stMarkdown strong, .stMarkdown b{ color:#1d160c; }
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *{ color:#5a4a30 !important; font-size:.92rem; }
+.stTabs [data-baseweb="tab"]{ font-size:1.02rem; }
+h3{ margin-top:.25rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -258,11 +268,11 @@ st.markdown(
     "</filter></svg>", unsafe_allow_html=True)
 st.markdown(
     "<div class='topbar'>"
-    "<span class='logo'>🛡️</span>"
-    "<span class='appname' data-text='Sentinel'>Sentinel</span>"
+    "<div class='topbar-row'><span class='logo'>🛡️</span>"
+    "<span class='appname' data-text='Sentinel'>Sentinel</span></div>"
     "<span class='appname-sub'>control plane for AI-generated code</span>"
     "</div>", unsafe_allow_html=True)
-st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 st.markdown(
     "<p class='tagline'>AI now writes a lot of code on its own — and some of it is risky. "
     "Sentinel reads each AI-made change and decides <b>Pass</b>, <b>Hold</b> (ask a human), "
