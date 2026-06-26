@@ -108,6 +108,33 @@ code, pre, .mono{ font-family:'JetBrains Mono', monospace; }
 [data-testid="stSidebar"]{ background:#DECCA6; border-right:1px solid var(--line); }
 [data-testid="stMetricValue"]{ font-family:'Oswald', sans-serif; }
 .stTabs [data-baseweb="tab"]{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.5px; }
+
+/* --- lock down Streamlit chrome: no menu / source / fork / edit links --- */
+#MainMenu{ visibility:hidden; }
+header{ visibility:hidden; height:0; }
+footer{ visibility:hidden; height:0; }
+[data-testid="stToolbar"]{ display:none !important; }
+[data-testid="stDecoration"]{ display:none !important; }
+[data-testid="stStatusWidget"]{ display:none !important; }
+.block-container{ padding-top:1.1rem !important; }
+
+/* --- top app-bar / brand, weathers to a patina on hover --- */
+.appbar{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+  border-bottom:3px solid var(--oxblood); padding-bottom:8px; margin:0 0 10px; }
+.brand{ font-family:'Oswald', sans-serif; font-weight:700; font-size:2.6rem;
+  text-transform:uppercase; letter-spacing:2px; color:var(--ink); cursor:default;
+  transition:color .6s ease, letter-spacing .6s ease, text-shadow .6s ease; }
+.brand:hover{ color:#566b4c; letter-spacing:3px;
+  text-shadow:1px 1px 0 #7e2b2233, -1px 0 2px #34452f66; }
+.brand-sub{ font-family:'Spectral', serif; font-style:italic; color:var(--muted); font-size:1.02rem; }
+
+/* --- light, cheap animations --- */
+.stButton>button{ transition:transform .15s ease, box-shadow .15s ease, background .15s ease; }
+.stButton>button:hover{ transform:translateY(-1px); box-shadow:0 5px 12px #0005; }
+.verdict{ animation:stampIn .35s ease-out; }
+@keyframes stampIn{ from{ transform:scale(1.12) rotate(-1.5deg); opacity:0; } to{ transform:none; opacity:1; } }
+.step{ animation:fadeUp .3s ease-out; }
+@keyframes fadeUp{ from{ transform:translateY(4px); opacity:0; } to{ transform:none; opacity:1; } }
 </style>
 """, unsafe_allow_html=True)
 
@@ -192,11 +219,14 @@ def agent_error_message(e):
 
 
 # --------------------------------------------------------------- header
-st.title("🛡️ Sentinel")
 st.markdown(
-    "<span class='tagline'>AI now writes a lot of code on its own — and some of it is risky. "
+    "<div class='appbar'><span class='brand'>🛡️ Sentinel</span>"
+    "<span class='brand-sub'>a control plane for AI-generated code</span></div>",
+    unsafe_allow_html=True)
+st.markdown(
+    "<p class='tagline'>AI now writes a lot of code on its own — and some of it is risky. "
     "Sentinel reads each AI-made change and decides <b>Pass</b>, <b>Hold</b> (ask a human), "
-    "or <b>Block</b>, before it can do harm.</span>", unsafe_allow_html=True)
+    "or <b>Block</b>, before it can do harm.</p>", unsafe_allow_html=True)
 
 with st.sidebar:
     st.markdown("### Sentinel")
