@@ -27,6 +27,10 @@ DANGEROUS = [
     (re.compile(r"verify\s*=\s*False"), "TLS verification disabled"),
     (re.compile(r"(is_admin|is_superuser|is_staff)\s*=\s*True"), "privilege escalation"),
     (re.compile(r"\brm\s+-rf\b"), "rm -rf (destructive)"),
+    (re.compile(r"""(?i)(execute|executemany|query)\s*\(\s*f['"].*(select|insert|update|delete|drop)"""),
+     "SQL built with an f-string (injection risk)"),
+    (re.compile(r"""(?i)\b(select|insert\s+into|update|delete\s+from)\b[^\n]*['"]\s*\+"""),
+     "SQL built by string concatenation (injection risk)"),
 ]
 
 

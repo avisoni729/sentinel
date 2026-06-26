@@ -30,3 +30,8 @@ def test_security_doc_is_not_sensitive():
 
 def test_payment_named_test_file_is_not_sensitive():
     assert run("+++ b/tests/test_payment.py\n+def test_x(): pass\n").verdict == "ALLOW"
+
+
+def test_sql_fstring_is_flagged():
+    diff = '+++ b/db.py\n+    cursor.execute(f"SELECT * FROM users WHERE id = {uid}")\n'
+    assert run(diff).verdict == "ESCALATE"
